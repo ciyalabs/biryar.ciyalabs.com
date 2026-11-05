@@ -1,0 +1,66 @@
+---
+title: Biryar
+description: A self-hosted Amazon operations cockpit. Reads your own seller account, measures what Amazon actually charged, and prices from it.
+template: splash
+hero:
+  tagline: Amazon operations, one decision at a time.
+  actions:
+    - text: Install
+      link: /setup/install/
+      icon: right-arrow
+    - text: Read the reports
+      link: /reports/
+      variant: minimal
+    - text: Source on GitHub
+      link: https://github.com/ciyalabs/biryar
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## The claim this is built on
+
+Most sellers price against a modelled fee. They take the referral rate from the
+fee schedule, add an estimate for fulfilment, and call the difference margin.
+
+Measured against the Finances feed rather than the fee schedule, the real cut on
+a cheap unit lands between **33% and 43% of the sale price**, not the ~17.85% the
+schedule implies. The gap is made of closing fees, per-unit flat charges, postage
+bought through Buy Shipping, and fee VAT. The schedule either states these
+separately or does not mention them at all.
+
+Biryar does not model the fee. It reads what Amazon actually took, per SKU, per
+order, and derives the break-even from it.
+
+```
+break-even price = (landed cost + flat charges) / (1 - measured rate)
+```
+
+A floor built on a modelled rate is a guess wearing a number's clothes. The whole
+point of this system is to stop guessing.
+
+<CardGrid>
+  <Card title="Your keys, your machine">
+    You register your own application against your own seller account. There is
+    no Biryar server, so there is nowhere for your data to go.
+  </Card>
+  <Card title="Read-only">
+    No price writes, no listing edits, no messages sent. Release 0.1 cannot
+    change anything in your Amazon account.
+  </Card>
+  <Card title="One container">
+    No GPU, no second machine, no background cloud workers.
+  </Card>
+  <Card title="Open source">
+    Business Source License 1.1. Run it for your own business; convert to
+    Apache 2.0 in 2030.
+  </Card>
+</CardGrid>
+
+## Status
+
+**Pre-release.** Biryar is being assembled from a private codebase that has been
+running a live Amazon business since September 2026. The
+[reports](/reports/) describe the system as it already works; the
+[install guide](/setup/install/) describes what is still being packaged.

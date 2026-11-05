@@ -1,0 +1,11 @@
+/* Biryar accent, matching the mark used across Ciya Labs properties. */
+:root {
+  --sl-color-accent-low: #3a0d12;
+  --sl-color-accent: #c8102e;
+  --sl-color-accent-high: #f3a3ae;
+}
+:root[data-theme='light'] {
+  --sl-color-accent-low: #f7ced4;
+  --sl-color-accent: #c8102e;
+  --sl-color-accent-high: #6b0a19;
+}

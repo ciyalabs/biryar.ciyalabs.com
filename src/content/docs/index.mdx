@@ -1,7 +1,14 @@
 ---
 title: Biryar
-description: A self-hosted Amazon operations cockpit. Reads your own seller account, measures what Amazon actually charged, and prices from it.
+description: A multi-tenant Amazon operations platform. Reads your own seller account, measures what Amazon actually charged, and prices from it.
 template: splash
+# Starlight appends the site title to every page title. On the landing page,
+# whose title is already the site name, that renders as "Biryar | Biryar".
+# Overriding the tag here fixes the one page it affects and gives the
+# homepage a title that says what the thing does.
+head:
+  - tag: title
+    content: Biryar — Amazon operations, one decision at a time
 hero:
   tagline: Amazon operations, one decision at a time.
   actions:

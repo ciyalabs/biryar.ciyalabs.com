@@ -7,7 +7,6 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Biryar',
-      tagline: 'Amazon operations, one decision at a time',
       description:
         'A self-hosted Amazon operations cockpit. Reads your own seller account, ' +
         'measures what Amazon actually charged, and prices from it.',
@@ -23,7 +22,7 @@ export default defineConfig({
       customCss: ['./src/styles/biryar.css'],
       sidebar: [
         { label: 'Start here', items: [
-          { label: 'What Biryar is', slug: 'index' },
+          { label: 'What Biryar is', link: '/' },
           { label: 'Install', slug: 'setup/install' },
           { label: 'Getting your SP-API keys', slug: 'setup/sp-api' },
           { label: 'Keepa', slug: 'setup/keepa' },

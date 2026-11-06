@@ -126,9 +126,15 @@ function rewriteLinks(body, from) {
 }
 
 function render(page, markdown) {
+  // A source document may carry its own front matter. Left in place it is
+  // not read as front matter here — this file gets its own, above — so it
+  // renders as a horizontal rule and a stray "title:" line in the middle of
+  // the page. That shipped once, on the install guide.
+  const withoutFrontMatter = markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n+/, "");
+
   // Starlight renders `title` as the h1, so the document's own h1 would be a
   // second one. Drop it and keep what follows.
-  const body = markdown.replace(/^#\s+.*\n+/, "");
+  const body = withoutFrontMatter.replace(/^#\s+.*\n+/, "");
 
   const sidebar = page.order ? `sidebar:\n  order: ${page.order}\n` : "";
   return (

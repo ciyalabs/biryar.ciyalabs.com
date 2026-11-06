@@ -4,9 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Biryar Reimbursements</title>
-<meta name="description" content="Two of Biryar's agents that write rather than calculate. One audits Amazon's warehouse records for lost and damaged stock that was never paid for and drafts the claim. The other drafts replies to buyers with a small local language model. Neither sends anything. How they are built, why they are built that way, and what still stands between them and live work.">
+<meta name="description" content="How Biryar audits Amazon's warehouse records for stock lost and never paid for, and how it drafts replies to buyers with a small language model on the seller's own hardware. Two agents that produce words, and that never send anything.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <style>
 :root{
   color-scheme:light;
@@ -79,10 +81,15 @@ figcaption b{color:var(--ink);font-weight:600}
 .chart .label{fill:var(--ink-2);font-size:12px}
 .chart .ann{fill:var(--ink-2);font-size:11.5px}
 .chart .loss{fill:var(--loss)} .chart .paid{fill:var(--paid)}
-.chart .window{fill:var(--paid);fill-opacity:.1;stroke:var(--paid);stroke-width:1;stroke-dasharray:4 3}
-.chart .wait{fill:var(--wait);fill-opacity:.12}
+.chart .window{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3}
+.chart .value{fill:var(--ink);font-size:12px;font-weight:600}
+.chart .owedbar{fill:var(--loss)}
+.chart .linkhead{fill:var(--paid)}
+.chart .lane-n{fill:var(--ink);font-size:12.5px;font-weight:600}
+.legend{--wait-sw:color-mix(in srgb,var(--wait) 35%,var(--bg))}
+.chart .wait{fill:var(--wait);fill-opacity:.35}
 .chart .link{stroke:var(--paid);stroke-width:1.6;fill:none}
-.chart .owed{fill:none;stroke:var(--loss);stroke-width:2}
+.chart .owed{fill:var(--bg);stroke:var(--loss);stroke-width:2.4}
 .chart .bar{fill:var(--ink-3)} .chart .bar-hot{fill:var(--accent)}
 .chart .thr-mad{stroke:var(--accent);stroke-width:1.6;stroke-dasharray:6 4}
 .chart .thr-sd{stroke:var(--ink-3);stroke-width:1.4;stroke-dasharray:2 3}
@@ -98,6 +105,16 @@ figcaption b{color:var(--ink);font-weight:600}
 .legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--sw)}
 .formula{background:var(--bg-2);border-left:3px solid var(--accent);padding:16px 20px;margin:24px 0;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:14px;line-height:1.9;overflow-x:auto}
 .formula div{white-space:pre}
+.formula.math{font-family:"IBM Plex Sans",sans-serif;font-size:15px;line-height:1.5;padding:22px 24px 18px}
+.formula.math div{white-space:normal}
+.formula.math .tex{font-size:17px;overflow-x:auto;overflow-y:hidden;padding:4px 0 10px;color:var(--ink)}
+.formula.math .tex .katex-display{margin:0}
+.formula.math .symbols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 22px;margin:12px 0 0;padding-top:14px;border-top:1px solid var(--rule);font-size:13.5px;color:var(--ink-2)}
+.formula.math .symbols>div{display:flex;gap:10px;align-items:baseline}
+.formula.math .symbols dt{min-width:40px;color:var(--ink);font-size:15px}
+.formula.math .symbols dd{margin:0}
+.formula.math .c{margin-top:14px}
+@media (max-width:560px){.formula.math{padding:18px 14px 14px}.formula.math .tex{font-size:13px}}
 .formula .c{color:var(--ink-3);white-space:normal;font-family:"IBM Plex Sans",sans-serif;font-size:13px;margin-top:6px}
 .convo{margin:28px 0;font-family:"IBM Plex Sans",sans-serif;font-size:14.5px;line-height:1.5}
 .convo .row{display:flex;margin:0 0 10px}
@@ -144,30 +161,30 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 
 <div class="eyebrow">Technical report · Biryar, part 6 · Reimbursements and drafting</div>
 <h1>The Auditor and the Scribe</h1>
-<p class="lede">Two of Biryar's agents produce words rather than numbers. One reads Amazon's warehouse records and drafts claims for stock that was lost and never paid for. The other reads buyers' messages and drafts replies with a small language model that runs on the business's own hardware. Neither of them sends anything, and that single decision shapes almost everything about how they are built.</p>
-<div class="byline"><span>Loghman Samani</span><span>Ciya Labs</span><span>Germany, October 2026</span></div>
+<p class="lede">Two of Biryar's agents produce words rather than numbers. One reads Amazon's warehouse records and drafts claims for stock that was lost and never paid for. The other reads buyers' messages and drafts replies with a small language model that runs on the seller's own hardware. Neither of them sends anything, and that single decision shapes almost everything about how they are built.</p>
+<div class="byline"><span>Loghman Samani</span><span>Ciya Labs</span><span>November 2026</span></div>
 
 <figure>
   <div class="hero"><img src="fig/header.jpg" alt="" onerror="this.parentNode.classList.add('missing')"></div>
-  <figcaption class="hero-credit">Generated with an image model</figcaption>
+  <figcaption class="hero-credit">Generated with OpenAI's image model</figcaption>
 </figure>
 
 <div class="board" role="region" aria-label="Status of the two agents">
-<div class="hd"><b>Status board</b><span>as of 6 October 2026</span></div>
+<div class="hd"><b>Status board</b><span>at the time of writing</span></div>
 <ul>
-<li><span class="chip done">Built</span><div><b>Both agents, with their offline test suites</b><em>94 tests for the reimbursement auditor and 64 for the drafting agent, none of which touch Amazon, a mailbox or a language model.</em></div></li>
-<li><span class="chip wait">Waiting</span><div><b>Reimbursement data</b><em>The business sent its first stock to Amazon's warehouses at the end of August, and a loss only becomes claimable after weeks of waiting for Amazon to pay on its own. The live reader of Amazon's reports is written but not yet switched on.</em></div></li>
-<li><span class="chip block">Blocked</span><div><b>The buyer mailbox</b><em>The half-hourly check of the mailbox that receives buyer messages is configured and currently fails to sign in.</em></div></li>
-<li><span class="chip wait">Waiting</span><div><b>The local language model</b><em>Installed and answering, while the platform still points the drafting agent at its test stub.</em></div></li>
+<li><span class="chip done">Built</span><div><b>Both agents, with their offline test suites</b><em>94 tests for the reimbursement auditor and 74 for the drafting agent, none of which touch Amazon, a mailbox or a language model.</em></div></li>
+<li><span class="chip wait">Waiting</span><div><b>The live report reader</b><em>Written and tested against fakes, and not yet connected to the weekly job. Until it is, the auditor can run from report files exported by hand.</em></div></li>
+<li><span class="chip wait">Waiting</span><div><b>Learning from edits</b><em>The training step is written and switched to a dry run. It needs real edited drafts before it has anything to learn from.</em></div></li>
+<li><span class="chip wait">Waiting</span><div><b>The local language model</b><em>The connection to a local runtime is built, and the default configuration selects a test stub until a seller points it at one.</em></div></li>
 <li><span class="chip done">By design</span><div><b>Sending and filing</b><em>Not automated, and not planned to be. Every reply and every claim leaves through a person.</em></div></li>
 </ul>
 </div>
 
-<p>The board is at the top because it would be easy to read the rest of this report as a description of working machinery. It is a description of finished machinery waiting for its inputs, written now because the design questions it answers are the interesting part, and they do not change when the data arrives.</p>
+<p>The board is at the top because it would be easy to read the rest of this report as a description of working machinery. It describes finished machinery that has yet to run on real data, so what follows is an account of design rather than of results. The design questions are the interesting part, and they do not change when the data arrives.</p>
 
 <div class="split">
 <div><h4>The auditor</h4>Compares what Amazon lost or damaged with what Amazon paid back, and drafts a claim for the difference. Deterministic arithmetic, a small anomaly detector, no language model required.</div>
-<div><h4>The scribe</h4>Reads a buyer's message, checks it for trouble, removes sensitive numbers, asks a local language model for a reply under strict rules, flags risky wording, and puts the draft in front of the owner.</div>
+<div><h4>The scribe</h4>Reads a buyer's message, checks it for trouble, removes sensitive numbers, asks a local language model for a reply under strict rules, flags risky wording, and puts the draft in front of the seller.</div>
 </div>
 
 <h2 id="auditor"><small>Part A</small>The auditor</h2>
@@ -176,34 +193,39 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 <p>Reconciling two independent records of the same events is one of the oldest procedures in auditing [1], and the auditor applies it in its plainest form. It reads every ledger event with a recoverable reason, damaged or lost in a warehouse, inbound, in transit or after a customer return, or destroyed, treats each as a claim the seller holds against Amazon, and then lets reimbursements pay those claims off.</p>
 
 <figure>
-<svg viewBox="0 0 700 232" role="img" aria-label="Illustrative timeline for one product. A loss of three units on day 0 is paid by a reimbursement of two units on day 30 inside the 120-day match window, leaving one unit owed. After the 45-day waiting period the remaining unit becomes eligible for a drafted claim. A second loss on day 80 is paid in full on day 150." class="chart">
-<rect class="window" x="60" y="40" width="480" height="70"/>
-<text class="ann" x="300" y="34" text-anchor="middle">match window for the first loss, 120 days</text>
-<rect class="loss" x="54" y="72" width="12" height="36" rx="2"/><text class="ann" x="72" y="68">loss, 3 units</text>
-<rect class="paid" x="174" y="84" width="12" height="24" rx="2"/><text class="ann" x="192" y="80">paid, 2 units</text>
-<rect class="loss" x="374" y="84" width="12" height="24" rx="2"/><text class="ann" x="392" y="80">loss, 2 units</text>
-<rect class="paid" x="654" y="84" width="12" height="24" rx="2"/><text class="ann" x="648" y="80" text-anchor="end">paid in full</text>
-<path class="link" d="M180,110 C180,128 60,128 60,110"/>
-<path class="link" d="M660,110 C660,128 380,128 380,110"/>
-<rect class="wait" x="60" y="140" width="180" height="22"/>
-<text class="ann" x="150" y="155" text-anchor="middle">wait 45 days for Amazon</text>
-<circle class="owed" cx="240" cy="178" r="7"/><text class="ann" x="252" y="182">1 unit still owed, claim drafted</text>
-<line class="axis" x1="40" y1="200" x2="680" y2="200"/>
-<text class="tick" x="60" y="218" text-anchor="middle">day 0</text><text class="tick" x="180" y="218" text-anchor="middle">30</text><text class="tick" x="240" y="218" text-anchor="middle">45</text><text class="tick" x="380" y="218" text-anchor="middle">80</text><text class="tick" x="540" y="218" text-anchor="middle">120</text><text class="tick" x="660" y="218" text-anchor="middle">150</text>
+<svg viewBox="0 0 700 290" role="img" aria-label="Illustrative timeline for one product, with one lane per loss. Loss A, three units on day 0, opens a 120-day match window. A reimbursement of two units on day 30 falls inside it, leaving one unit owed. When the 45-day wait ends, a claim is drafted for that unit. Loss B, two units on day 80, opens its own window. A reimbursement of two units on day 122 falls two days past the window of loss A, so it pays loss B in full, before the wait of loss B ends, and no claim is drafted." class="chart">
+<text class="lane-n" x="0" y="30">Amazon pays</text><text class="ann" x="0" y="45">reimbursements</text>
+<rect class="window" x="96.0" y="62" width="354.0" height="92" rx="2"/><rect class="window" x="332.0" y="164" width="354.0" height="92" rx="2"/>
+<text class="ann" x="444.0" y="77" text-anchor="end">match window of A, 120 days</text>
+<text class="ann" x="680.0" y="179" text-anchor="end">match window of B, 120 days</text>
+<text class="lane-n" x="0" y="98">Loss A</text><text class="ann" x="0" y="113">day 0, 3 units</text><text class="lane-n" x="0" y="200">Loss B</text><text class="ann" x="0" y="215">day 80, 2 units</text>
+<rect class="owedbar" x="96.0" y="91.5" width="88.5" height="21"/><rect class="owedbar" x="184.5" y="98.5" width="501.5" height="7"/><rect class="owedbar" x="332.0" y="197.0" width="123.9" height="14"/>
+<rect class="wait" x="96.0" y="132" width="132.8" height="15" rx="2"/><text class="ann" x="162.4" y="143.5" text-anchor="middle">45-day wait</text><rect class="wait" x="332.0" y="234" width="132.8" height="15" rx="2"/><text class="ann" x="398.4" y="245.5" text-anchor="middle">45-day wait</text>
+<circle class="owed" cx="228.8" cy="102" r="7"/>
+<text class="value" x="240.8" y="123">claim drafted for the last unit</text>
+<text class="value" x="466.9" y="208">paid in full, so no claim</text>
+<rect class="paid" x="178.5" y="22" width="12" height="22" rx="2"/><text class="value" x="195.5" y="37">day 30, 2 units</text><rect class="paid" x="449.9" y="22" width="12" height="22" rx="2"/><text class="value" x="466.9" y="37">day 122, 2 units</text>
+<path class="link" d="M184.5,44 V84.0"/><path class="linkhead" d="M180.5,83.0 L184.5,91 L188.5,83.0 z"/><path class="link" d="M455.9,44 V189.0"/><path class="linkhead" d="M451.9,188.0 L455.9,196 L459.9,188.0 z"/>
+<text class="ann" x="463.9" y="74">2 days past the window of A,</text>
+<text class="ann" x="463.9" y="89">so it cannot pay A</text>
+<line class="axis" x1="96" y1="264" x2="686.0" y2="264"/>
+<line class="axis" x1="96.0" y1="264" x2="96.0" y2="268"/><text class="tick" x="96.0" y="282" text-anchor="middle">day 0</text><line class="axis" x1="184.5" y1="264" x2="184.5" y2="268"/><text class="tick" x="184.5" y="282" text-anchor="middle">30</text><line class="axis" x1="228.8" y1="264" x2="228.8" y2="268"/><text class="tick" x="228.8" y="282" text-anchor="middle">45</text><line class="axis" x1="332.0" y1="264" x2="332.0" y2="268"/><text class="tick" x="332.0" y="282" text-anchor="middle">80</text><line class="axis" x1="450.0" y1="264" x2="450.0" y2="268"/><text class="tick" x="450.0" y="282" text-anchor="middle">120</text><line class="axis" x1="686.0" y1="264" x2="686.0" y2="268"/><text class="tick" x="686.0" y="282" text-anchor="middle">200</text>
 </svg>
-<div class="legend"><span style="--sw:var(--loss)">Recoverable loss in the ledger</span><span style="--sw:var(--paid)">Reimbursement</span><span style="--sw:var(--accent-soft)">Match window</span></div>
-<figcaption><b>Figure 1.</b> How losses and reimbursements meet, for one product with illustrative dates. A reimbursement pays the oldest loss of the same product still owed within its window, and can pay several. What remains after the waiting period becomes a drafted claim.</figcaption>
+<div class="legend"><span style="--sw:var(--loss)">Units still owed, thicker is more</span><span style="--sw:var(--paid)">Reimbursement</span><span style="--sw:var(--accent-soft)">Match window</span><span style="--sw:var(--wait-sw)">Wait before a claim</span></div>
+<figcaption><b>Figure 1.</b> How losses and reimbursements meet, for one product with illustrative dates. Each loss opens its own window, and its red bar thins as it is paid. The payment on day 30 lands inside the window of loss A and pays two of its three units. One unit is still owed when the wait ends, so a claim is drafted. The payment on day 122 falls just past that window, so it cannot touch loss A, and it clears loss B before the wait of B ends, so B needs no claim. Two days earlier, the oldest-first rule would have given loss A its last unit first.</figcaption>
 </figure>
 
-<p>The matching rule is deliberately conservative. Losses of the same product on the same day are collapsed into one claim. Reimbursements are applied oldest first, each to the oldest loss of the same product that is still owed and lies within 120 days of the reimbursement, and a single reimbursement can drain several losses, with every drained claim recorded so the trail can be audited. The rule matches on product, window and quantity, and pointedly not on the reason text, because Amazon's reimbursement reasons rarely echo the ledger's wording and trying to be clever there would produce false claims the owner could not trust. Whatever remains unpaid is owed, and a remaining balance becomes eligible for a drafted claim only once the loss is 45 days old, which gives Amazon time to pay on its own first. The scan looks back 540 days. All three windows are configuration rather than code, because Amazon's own claim rules have changed more than once and will change again.</p>
-<p>The value of an owed unit is the owner's landed cost, the one number no Amazon report contains. It is the same dated cost that Part 5 of this series traces from supplier invoices, so a claim and a profit figure never disagree about what a unit was worth.</p>
+<p>The matching rule is deliberately conservative. Losses of the same product on the same day are collapsed into one claim. Reimbursements are applied oldest first, each to the oldest loss of the same product that is still owed and lies within 120 days of the reimbursement, and a single reimbursement can drain several losses, with every drained claim recorded so the trail can be audited. The rule matches on product, window and quantity, and pointedly not on the reason text, because Amazon's reimbursement reasons rarely echo the ledger's wording and trying to be clever there would produce false claims a seller could not trust. Whatever remains unpaid is owed, and a remaining balance becomes eligible for a drafted claim only once the loss is 45 days old, which gives Amazon time to pay on its own first. The scan looks back 540 days. All three windows are configuration rather than code, because Amazon's own claim rules have changed more than once and will change again.</p>
+<p>The value of an owed unit is the seller's landed cost, the one number no Amazon report contains. The auditor reads it from a cost table supplied to it, and a product missing from that table falls back to a configured default, so the amount on a claim is only as good as that table. Part 5 of this series describes a more careful, dated record of the same cost, and joining the two is listed under what remains.</p>
 
 <h3>The weird-week detector</h3>
 <p>Beside the claims, the auditor watches for warehouses that start losing stock at an unusual rate, a sign of a process problem worth raising with Amazon even before any individual claim matures. For each warehouse it counts recoverable losses per day over the lookback window and scores each day with a robust z-score.</p>
 
-<div class="formula" role="figure" aria-label="Robust z-score">
-<div>z = (losses today − median of daily losses) ÷ (1.4826 × MAD)</div>
-<div class="c">MAD is the median absolute deviation from the median. The factor 1.4826 makes it comparable to a standard deviation for normally distributed data [2, 3]. When most days are zero the MAD collapses, and the detector falls back to the ordinary standard deviation. A day is flagged when z reaches 2.5 and the loss is not trivial, and only the ten highest are kept.</div>
+<div class="formula math" role="figure" aria-label="Robust z-score. Losses today minus the median of daily losses, divided by 1.4826 times the median absolute deviation.">
+<div class="tex">\begin{aligned} z_t &= \frac{x_t - \operatorname{med}(x)}{1.4826 \cdot \operatorname{MAD}(x)} \\[8pt] \operatorname{MAD}(x) &= \operatorname{med}\big(\lvert x - \operatorname{med}(x) \rvert\big) \end{aligned}</div>
+<dl class="symbols"><div><dt><span class="tex-i">x_t</span></dt><dd>the recoverable losses on day <span class="tex-i">t</span> at one warehouse</dd></div><div><dt><span class="tex-i">x</span></dt><dd>the daily losses over the window, zero days included</dd></div><div><dt><span class="tex-i">z_t</span></dt><dd>how unusual day <span class="tex-i">t</span> is</dd></div></dl>
+
+<div class="c">The factor 1.4826 makes it comparable to a standard deviation for normally distributed data [2, 3]. When most days are zero the MAD collapses, and the detector falls back to the ordinary standard deviation. A day is flagged when z reaches 2.5 and the loss is not trivial, and only the ten highest are kept.</div>
 </div>
 
 <p>The median and the MAD are used because they resist outliers [2, 4]. With an ordinary mean and standard deviation, one bad week inflates the spread so much that the next bad week no longer looks unusual, which is precisely the case that matters. An early version had a subtler flaw. It built each warehouse's baseline only from days on which losses occurred, so a long quiet period followed by a sudden spike never accumulated enough history to be scored at all. Days without losses now count as zeros within the window, so silence is part of the baseline, as it should be.</p>
@@ -224,11 +246,11 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 </figure>
 
 <h3>Built to survive a long ledger</h3>
-<p>A seller's ledger over eighteen months can run to millions of rows for a large account, and Amazon delivers reports asynchronously, request, wait, download. The auditor is built for both facts even at this business's small scale. It streams reports rather than loading them whole, stores them in its own local database, and reconciles one product at a time, so memory never holds more than one product's history. Ingestion is idempotent. A re-pulled date range replaces what was there, and reimbursements are keyed on Amazon's own identifier, so repeated pulls converge rather than double count. Later runs ask only for days not yet seen. A report request still being prepared by Amazon when the process stops is remembered and resumed rather than requested again, every network call retries with exponential back-off on throttling and gives up at once on errors that retrying cannot fix, and a reconciliation interrupted halfway leaves a marked, unfinished run that the next pass can resume.</p>
+<p>A seller's ledger over eighteen months can run to millions of rows for a large account, and Amazon delivers reports asynchronously, request, wait, download. The auditor is built for both facts, even for a small seller. It streams reports rather than loading them whole, stores them in its own local database, and reconciles one product at a time, so memory never holds more than one product's history. Ingestion is idempotent. A re-pulled date range replaces what was there, and reimbursements are keyed on Amazon's own identifier, so repeated pulls converge rather than double count. Later runs ask only for days not yet seen. A report request still being prepared by Amazon when the process stops is remembered and resumed rather than requested again, every network call retries with exponential back-off on throttling and gives up at once on errors that retrying cannot fix, and a reconciliation interrupted halfway leaves a marked, unfinished run that the next pass can resume.</p>
 <p>Until the live reader is switched on, the same pipeline runs from report files exported by hand from Seller Central, through the same parsers, so the file path and the live path produce identical events from identical rows.</p>
 
 <h3>A draft, never a filing</h3>
-<p>An eligible claim becomes a pending item in Biryar's approval queue, carrying the product, the warehouse, the date, the reason, the quantity and the amount, and a link to the prediction log entry that produced it, so the owner's eventual approval or rejection becomes a label for later learning. The text of the claim comes from a deliberately formulaic template, because the agents who process reimbursement requests work from structured facts, product, warehouse, date, quantity, reason, amount, and a well-ordered list of those facts is what gets a claim handled. The template is a replaceable component, and Part C describes how the scribe can supply more natural prose instead.</p>
+<p>An eligible claim becomes a pending item in Biryar's approval queue, carrying the product, the warehouse, the date, the reason, the quantity and the amount, and a link to the prediction log entry that produced it, so the seller's eventual approval or rejection becomes a label for later learning. The text of the claim comes from a deliberately formulaic template, because the agents who process reimbursement requests work from structured facts, product, warehouse, date, quantity, reason, amount, and a well-ordered list of those facts is what gets a claim handled. The template is a replaceable component, and Part C describes how the scribe can supply more natural prose instead.</p>
 <p>The auditor never files anything. Its configuration carries two separate safety switches, and both must be turned off before any claim could leave, and even then the interface for submitting a claim is intentionally left without an implementation, so a request to file answers that nothing is wired rather than pretending something was sent. Claims are filed by a person in Seller Central.</p>
 
 <h2 id="scribe"><small>Part B</small>The scribe</h2>
@@ -236,7 +258,7 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 <p>Buyers write to sellers through Amazon's messaging system, and Amazon forwards each message to the seller's registered email address. Amazon's programmatic messaging interface sends messages but offers no way to read the inbox, so the scribe reads a mailbox. A parser recognises the forwarded emails by stable identifiers, the order number and the product's Amazon identifier, rather than by label text that varies between marketplaces and languages, and each message is paired with the order behind it, its dates, the amount paid and whether a return is still possible, because a reply that knows the ship date says something true and one that does not either guesses or stays vague.</p>
 
 <figure>
-<svg viewBox="0 0 700 300" role="img" aria-label="The drafting pipeline. A buyer message is checked for refusal triggers. If one matches, a needs-human note is written and no model is called. Otherwise sensitive numbers are redacted, the message and order context go into a prompt with hard rules, a local language model writes a draft, the draft is scanned for risky phrases, and it enters the approval queue. The owner sends it unchanged, edits it, or rejects it. Edits become preference pairs for later training." class="diagram">
+<svg viewBox="0 0 700 300" role="img" aria-label="The drafting pipeline. A buyer message is checked for refusal triggers. If one matches, a needs-human note is written and no model is called. Otherwise sensitive numbers are redacted, the message and order context go into a prompt with hard rules, a local language model writes a draft, the draft is scanned for risky phrases, and it enters the approval queue. The seller sends it unchanged, edits it, or rejects it. Edits become preference pairs for later training." class="diagram">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
 <rect class="box" x="10" y="20" width="120" height="46" rx="4"/><text class="title" x="70" y="40" text-anchor="middle">Buyer message</text><text class="small" x="70" y="56" text-anchor="middle">plus the order</text>
 <rect class="box" x="150" y="20" width="120" height="46" rx="4"/><text class="title" x="210" y="40" text-anchor="middle">Refusal check</text><text class="small" x="210" y="56" text-anchor="middle">lawyer, police, fraud</text>
@@ -252,7 +274,7 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 <path class="edge" d="M210,160 V222 H318" marker-end="url(#a)"/>
 <rect class="box-acc" x="320" y="196" width="140" height="50" rx="4"/><text class="title" x="390" y="217" text-anchor="middle">Approval queue</text><text class="small" x="390" y="234" text-anchor="middle">draft, flags, evidence</text>
 <path class="edge" d="M390,246 V262" marker-end="url(#a)"/>
-<rect class="box-human" x="300" y="264" width="180" height="30" rx="15"/><text class="title" x="390" y="284" text-anchor="middle">Owner sends, edits or rejects</text>
+<rect class="box-human" x="300" y="264" width="180" height="30" rx="15"/><text class="title" x="390" y="284" text-anchor="middle">Seller sends, edits or rejects</text>
 <path class="edge" d="M480,279 H560" marker-end="url(#a)"/>
 <text class="small" x="566" y="274">an edit becomes a</text><text class="small" x="566" y="289">preference pair</text>
 </svg>
@@ -260,12 +282,12 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 </figure>
 
 <h3>A small model, on purpose</h3>
-<p>The drafts come from Qwen2.5-3B-Instruct [6], an openly available instruction-tuned model, quantised to four bits so that it needs about two gigabytes of graphics memory and runs comfortably on the four-gigabyte card of the development laptop, served by a local runtime that loads the model on demand. A larger model would write better prose and would not fit on the card. The trade is acceptable because the output is a draft that a person reads, and because a reply to a buyer needs to be short, correct and polite far more than it needs to be eloquent. The sampling temperature is kept low, at 0.3, so drafts stay conservative and predictable.</p>
-<p>Running locally is a privacy decision as much as a cost one. Buyer messages contain names, addresses and order details, and the platform's rule is that business data and buyer data do not go to third-party models. The drafting agent can talk to three hosted language-model services, but it refuses to build any of them unless the owner has explicitly opted in, which has not happened, and even then sensitive numbers are removed before any text leaves. This follows the data-minimisation principle of European data protection law [7], applied in its strictest form, where by default the data does not leave the machine at all.</p>
+<p>The drafts come from an openly available instruction-tuned model. The default is Qwen2.5-3B-Instruct [6], quantised to four bits so that it needs about two gigabytes of graphics memory and runs comfortably on a modest four-gigabyte card, served by a local runtime that loads the model on demand and frees the memory between requests. The seven-billion-parameter sibling writes better prose and is a configuration change away, at the price of spilling onto the processor on such a card and running more slowly. The small model is an acceptable trade because the output is a draft that a person reads, and because a reply to a buyer needs to be short, correct and polite far more than it needs to be eloquent. The sampling temperature is kept low, at 0.3, so drafts stay conservative and predictable.</p>
+<p>Running locally is a privacy decision as much as a cost one. Buyer messages contain names, addresses and order details, and the platform's rule is that business data and buyer data do not go to third-party models. The drafting agent can talk to three hosted language-model services, but it refuses to build any of them unless the seller has explicitly opted in, and even then sensitive numbers are removed before any text leaves. This follows the data-minimisation principle of European data protection law [7], applied in its strictest form, where by default the data does not leave the machine at all.</p>
 
 <h3>The prompt is a contract</h3>
 <p>The model receives the buyer's message, the order facts and a system prompt that reads more like a contract than an instruction. It may draft only. It may offer at most one of a short list of permitted actions, pointing to the tracking information already on the order page, offering a return label if and only if the order is still eligible for return, or escalating to a person within a day. It may not reveal costs, suppliers or wholesale prices. It may not apologise for an event the order data says has not happened. And it may not state any product fact it was not given, no specifications, ratings, measurements or compatibility claims, with a worked example of the right and wrong answer to a question about waterproofing and battery life. That last rule exists because language models produce fluent, plausible statements that are simply false, a failure studied at length as hallucination [8], and on a product page a false specification is a returned order and possibly a complaint.</p>
-<p>There is a second reason to treat the prompt defensively. A buyer's message is text written by a stranger and placed inside the model's instructions. Research on systems that embed untrusted text in prompts has shown that such text can carry instructions of its own that the model then follows [9]. The scribe cannot fully prevent that, and it does not need to, because the worst a manipulated draft can do is sit in a queue in front of the owner. The decision not to send anything turns a security problem into a proofreading problem.</p>
+<p>There is a second reason to treat the prompt defensively. A buyer's message is text written by a stranger and placed inside the model's instructions. Research on systems that embed untrusted text in prompts has shown that such text can carry instructions of its own that the model then follows [9]. The scribe cannot fully prevent that, and it does not need to, because the worst a manipulated draft can do is sit in a queue in front of the seller. The decision not to send anything turns a security problem into a proofreading problem.</p>
 
 <div class="tablewrap"><table>
 <thead><tr><th>Layer</th><th>What it does</th><th>Examples</th></tr></thead>
@@ -274,26 +296,26 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 <tr><td>Redaction</td><td>Remove sensitive numbers before any model sees the text</td><td>payment card numbers, national identity numbers</td></tr>
 <tr><td>Prompt rules</td><td>Constrain what the model may claim or offer</td><td>one permitted action, no invented product facts, no cost data</td></tr>
 <tr><td>Length budget</td><td>Cap the reply, and truncate server-side if the model ignores the cap</td><td>about 250 tokens for a buyer reply, 350 for a claim</td></tr>
-<tr><td>Draft flags</td><td>Mark risky wording for the owner's attention without blocking it</td><td>"refund of", "guarantee", "we will replace"</td></tr>
+<tr><td>Draft flags</td><td>Mark risky wording for the seller's attention without blocking it</td><td>"refund of", "guarantee", "we will replace"</td></tr>
 </tbody>
 <caption>Table 1. Five layers around the model. Matching is case-insensitive and anchored at the start of a word, so "fraud" also catches "fraudulent" but "rate" does not fire inside "corporate".</caption>
 </table></div>
 
-<p>The flags deserve a note. They do not block a draft, they mark it, so that the owner's eye goes first to a sentence promising a refund of a specific amount or a replacement. Automation research has long documented that people supervising an automated system tend to accept its output without enough scrutiny, a tendency called automation bias [10]. A visible flag on exactly the sentences that commit money is a small, deliberate counterweight to it.</p>
+<p>The flags deserve a note. They do not block a draft, they mark it, so that the seller's eye goes first to a sentence promising a refund of a specific amount or a replacement. Automation research has long documented that people supervising an automated system tend to accept its output without enough scrutiny, a tendency called automation bias [10]. A visible flag on exactly the sentences that commit money is a small, deliberate counterweight to it.</p>
 
 <h3>What a draft looks like</h3>
 <div class="convo" aria-label="Illustrative exchange">
-<div class="row"><div class="bub"><span class="who">Buyer</span>The soft toy arrived with a torn seam. Can I get my money back? And is it machine washable?</div></div>
+<div class="row"><div class="bub"><span class="who">Buyer</span>The desk lamp arrived with a cracked shade. Can I get my money back? And does it work with a dimmer switch?</div></div>
 <div class="sys">refusal check passes · nothing to redact · order found, delivered, return-eligible</div>
-<div class="row r"><div class="bub"><span class="who">Draft from the local model</span>Thank you for letting us know, and I'm sorry the toy arrived damaged. Since your order is still eligible for return, I can send you a return label, and we will arrange a refund of the full price once it is back with us. I'd like to give you accurate care instructions, so let me confirm whether it is machine washable and get back to you shortly.<br><span class="flag">⚠ flagged · "refund of"</span></div></div>
-<div class="row r"><div class="bub"><span class="who">Owner's edit, sent</span>Thank you for letting us know, and I'm sorry the toy arrived damaged. Since your order is still eligible for return, I can send you a return label, and <del>we will arrange a refund of the full price once it is back with us</del> <ins>you will be refunded in full once it is back with us</ins>. I'd like to give you accurate care instructions, so let me confirm whether it is machine washable and get back to you shortly.</div></div>
+<div class="row r"><div class="bub"><span class="who">Draft from the local model</span>Thank you for letting us know, and I'm sorry the lamp arrived damaged. Since your order is still eligible for return, I can send you a return label, and we will arrange a refund of the full price once it is back with us. I'd like to give you accurate information, so let me confirm whether it works with a dimmer and get back to you shortly.<br><span class="flag">⚠ flagged · "refund of"</span></div></div>
+<div class="row r"><div class="bub"><span class="who">Seller's edit, sent</span>Thank you for letting us know, and I'm sorry the lamp arrived damaged. Since your order is still eligible for return, I can send you a return label, and <del>we will arrange a refund of the full price once it is back with us</del> <ins>you will be refunded in full once it is back with us</ins>. I'd like to give you accurate information, so let me confirm whether it works with a dimmer and get back to you shortly.</div></div>
 </div>
 <p style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--ink-2);margin-top:-12px">An illustrative exchange, written for this report. It shows the shape of the process, a declined specification question, a flagged commitment and a small edit, not a real buyer.</p>
 
-<h3>Learning from the owner's pen</h3>
-<p>Every draft is written to the platform's prediction log, and every decision the owner makes about it, sent unchanged, edited, or rejected, is recorded against it. The quality measure that follows is unusually honest. It is the share of drafts the owner sends without changing a word. That rate is the agent's primary metric, because an edit is the owner telling the system exactly where it was wrong.</p>
-<p>Edits are also the training data. Each edited draft yields a pair, the text the owner preferred and the text the model wrote, which is the input of Direct Preference Optimisation, a method that tunes a language model directly on preferred and rejected answers without training a separate reward model [11]. It belongs to the same family of ideas as learning from human preference comparisons [12, 13], with the useful difference that here the preferences are not collected by asking anyone. They fall out of ordinary work. Training waits until at least thirty edited pairs exist, runs monthly, and would adapt the model with low-rank adapters on a four-bit base, the QLoRA recipe that makes fine-tuning feasible on a four-gigabyte card [14]. Like every model in Biryar, a retrained version ships in shadow and replaces the current one only when the owner promotes it.</p>
-<p>The rate at which the system can learn is therefore bounded by how much the business writes. That is a sensible bound. A small shop with few messages needs few improvements, and the training data grows exactly as fast as the need for it.</p>
+<h3>Learning from the seller's pen</h3>
+<p>Every draft is written to the platform's prediction log, and every decision the seller makes about it, sent unchanged, edited, or rejected, is recorded against it. The quality measure that follows is unusually honest. It is the share of drafts the seller sends without changing a word. That rate is the agent's primary metric, because an edit is the seller saying exactly where the draft was wrong.</p>
+<p>Edits are also the training data. Each edited draft yields a pair, the text the seller preferred and the text the model wrote, which is the input of Direct Preference Optimisation, a method that tunes a language model directly on preferred and rejected answers without training a separate reward model [11]. It belongs to the same family of ideas as learning from human preference comparisons [12, 13], with the useful difference that here the preferences are not collected by asking anyone. They fall out of ordinary work. Training waits until at least thirty edited pairs exist, runs as a queued job on the machine with the graphics card, and would adapt the model with low-rank adapters on a four-bit base, the QLoRA recipe that makes fine-tuning feasible on a four-gigabyte card [14]. Like every model in Biryar, a retrained version ships in shadow and replaces the current one only when a person promotes it.</p>
+<p>The rate at which the system can learn is therefore bounded by how much a seller writes. That is a sensible bound. A small shop with few messages needs few improvements, and the training data grows exactly as fast as the need for it.</p>
 
 <h3>Human in the loop, precisely placed</h3>
 <p>Parasuraman, Sheridan and Wickens proposed describing automation by how far it reaches into four stages, gathering information, analysing it, deciding and acting, and recommended that the level of automation be chosen separately for each [15]. The two agents in this report sit high on the first three and at zero on the last. They gather everything, analyse it, and propose a specific action with its full text, and the act itself, sending a message or filing a claim, stays with a person. The choice is not caution for its own sake. Amazon's rules put a person responsible for buyer communication, a claim filed in error costs credibility with the people who decide claims, and the cost of reading a short draft is small next to either.</p>
@@ -303,15 +325,16 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 <p>The division of labour is the general lesson of this report. Arithmetic belongs to deterministic code, which can be tested exhaustively and does not hallucinate. Language belongs to the model, which is good at tone and bad at facts. And the boundary between them is a narrow, typed interface that carries facts one way and words the other.</p>
 
 <figure>
-  <div class="shot" data-placeholder="Screenshot to add. fig/reimbursements.png, the Reimbursements page."><img src="fig/reimbursements.png" alt="The Reimbursements page of Biryar" onerror="this.parentNode.classList.add('missing')"></div>
-  <figcaption><b>Figure 4.</b> The Reimbursements page in Biryar, where claims owed and drafted replies wait for a decision. Nothing on the page talks to Amazon or to a buyer directly.</figcaption>
+  <div class="shot" data-placeholder="Screenshot to add. fig/reimbursements.png, the Reimbursements page."><img src="fig/reimbursements.png" alt="The Reimbursements page of Biryar with an empty queue, showing zero cases, zero replies and a notice that drafting is on a test stub" onerror="this.parentNode.classList.add('missing')"></div>
+  <figcaption><b>Figure 4.</b> The Reimbursements page in Biryar, where claims owed and drafted replies wait for a decision. In this view nothing is waiting, so the counters read zero and the send and reject buttons that appear beside each draft are not shown. The banner reports that drafting is still on the test stub described under What remains, and the configuration details inside it are blurred. Nothing on the page talks to Amazon or to a buyer directly.</figcaption>
 </figure>
 
 <h2 id="remains"><small>Honest margins</small>What remains</h2>
-<p><b>Switching on the report reader.</b> The live adapter for Amazon's two reports exists and is tested against fakes, and several of its details, report type names, payload field names and the shape of the downloaded documents, are explicitly marked to be verified against Amazon's current documentation before first use. Until it runs, the weekly reimbursement job checks for a reader, finds none and stops.</p>
-<p><b>The mailbox, and a quiet failure.</b> The buyer mailbox currently refuses the system's credentials, every half hour. The job logs a warning each time and the scheduler records the run as completed, because the job is written never to fail a scheduler tick. That is the right behaviour for a job and the wrong signal for a person, and a repeated sign-in failure should surface on the platform's health view rather than only in a log.</p>
-<p><b>The model behind the stub.</b> The platform's configuration still selects the test stub for drafting, a safe default during development that should now give way to the local model already installed.</p>
-<p><b>Language and currency.</b> The prompts and the claim template were written when the business targeted an English-speaking marketplace, and some order fields are still labelled in dollars. German buyers will write in German, and the prompts should say in which language to answer.</p>
+<p><b>Switching on the report reader.</b> The live adapter for Amazon's two reports exists and is tested against fakes, and several of its details, report type names, payload field names and the shape of the downloaded documents, are explicitly marked to be verified against Amazon's current documentation before first use. Until it is connected, the weekly reimbursement job finds no reader and stops.</p>
+<p><b>The mailbox, and a quiet failure.</b> When the buyer mailbox refuses the system's credentials, the half-hourly job logs a warning and the scheduler records the run as completed, because the job is written never to fail a scheduler tick. That is the right behaviour for a job and the wrong signal for a person, and a repeated sign-in failure should surface on the platform's health view rather than only in a log.</p>
+<p><b>The model behind the stub.</b> The platform's default configuration selects the test stub for drafting, a safe choice during development, and the page says so in a banner, as Figure 4 shows. A seller moves to the local model by pointing the configuration at a running local runtime.</p>
+<p><b>Language and currency.</b> The prompts and the claim template were written for an English-speaking marketplace, and some order and claim fields are still labelled in dollars. A marketplace in another language needs prompts that say in which language to answer, and the currency should come from the deployment rather than from a field name.</p>
+<p><b>Joining the two costs.</b> The auditor's cost table and the dated costs of Part 5 answer the same question separately. Reading one from the other would mean a claim and a profit figure could never disagree about what a unit was worth.</p>
 <p><b>Thin data, by nature.</b> A young account with modest stock loses few units, and many losses are reimbursed by Amazon without any claim. The auditor's value will show over years rather than weeks, and its anomaly detector needs a month of history at a warehouse before it scores anything.</p>
 
 <div class="coda">The two quietest agents in Biryar carry its clearest principle. Machines may gather, reconcile, rank and draft. People send. Everything in the design, from the conservative matching rule to the flags on a single sentence, exists to make the person's part of that bargain quick, informed and hard to get wrong.</div>
@@ -334,7 +357,7 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
 <li>Dettmers, T., Pagnoni, A., Holtzman, A., and Zettlemoyer, L. (2023). QLoRA. Efficient finetuning of quantized LLMs. <i>Advances in Neural Information Processing Systems</i>, 36.</li>
 <li>Parasuraman, R., Sheridan, T. B., and Wickens, C. D. (2000). A model for types and levels of human interaction with automation. <i>IEEE Transactions on Systems, Man, and Cybernetics, Part A</i>, 30(3), 286–297.</li>
 </ol>
-<p class="byline" style="margin-top:36px">Written from the agents' code, configuration and test suites and from the production server's logs on 6 October 2026. The exchange in Part B and the timelines in Figures 1 and 2 are illustrative. Biryar is a Ciya Labs project.</p>
+<p class="byline" style="margin-top:36px">Written from the agents' design notes and test suites, checked against the system in November 2026. The exchange in Part B and the timelines in Figures 1 and 2 are illustrative, and no real buyer or seller data appears in this report. Biryar is a Ciya Labs project.</p>
 </div>
 <script>
 (function(){
@@ -362,6 +385,13 @@ caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-2);pa
     try{localStorage.setItem(key,next)}catch(e){}
   });
 })();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  if(!window.katex)return;
+  document.querySelectorAll('.tex').forEach(function(e){katex.render(e.textContent,e,{displayMode:true,throwOnError:false})});
+  document.querySelectorAll('.tex-i').forEach(function(e){katex.render(e.textContent,e,{displayMode:false,throwOnError:false})});
+});
 </script>
 <!-- inline citations: begin -->
 <style>

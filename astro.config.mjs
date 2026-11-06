@@ -29,6 +29,7 @@ export default defineConfig({
         ]},
         { label: 'How it works', items: [
           { label: 'How the fees are measured', slug: 'methodology/fees' },
+          { label: 'How tenants are kept apart', slug: 'architecture/tenancy' },
         ]},
         { label: 'Reports', items: [
           { label: 'All reports', slug: 'reports' },

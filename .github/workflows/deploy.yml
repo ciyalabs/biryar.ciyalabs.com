@@ -28,6 +28,15 @@ jobs:
       # deploy cannot quietly pick up a different dependency tree than the
       # one that was tested.
       - run: npm ci
+      # The setup guides are generated from docs/ in ciyalabs/biryar. This
+      # fails the deploy if the committed copies have fallen behind, which
+      # is the whole reason they are generated: the public SP-API page once
+      # described a flow the product had already replaced.
+      - run: npm run check-docs
+        env:
+          # Only to raise the API rate limit; the repository is public and
+          # shared runner IPs can exhaust the anonymous allowance.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

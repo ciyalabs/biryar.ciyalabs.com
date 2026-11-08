@@ -34,9 +34,14 @@ jobs:
       # described a flow the product had already replaced.
       - run: npm run check-docs
         env:
-          # Only to raise the API rate limit; the repository is public and
-          # shared runner IPs can exhaust the anonymous allowance.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # DOCS_TOKEN is a fine-grained personal access token with
+          # read-only Contents on ciyalabs/biryar. It is required, not an
+          # optimisation: that repository is private, and a workflow's
+          # own GITHUB_TOKEN is scoped to the repository it runs in, so
+          # it cannot read another one. Without the secret this step
+          # fails with a 404, which is what a missing token looks like
+          # from the other side of a private repository.
+          GITHUB_TOKEN: ${{ secrets.DOCS_TOKEN }}
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

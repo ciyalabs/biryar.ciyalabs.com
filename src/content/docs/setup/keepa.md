@@ -13,7 +13,7 @@ sidebar:
 Release 0.1 reads your own Amazon account and nothing else. Keepa supplies
 price and rank history for products you do not yet own, which matters for
 sourcing decisions rather than for understanding what you already sell.
-Sourcing is deliberately out of 0.1 — see [MANIFEST.md](https://github.com/ciyalabs/biryar/blob/main/MANIFEST.md).
+Sourcing is deliberately out of 0.1 — see `MANIFEST.md`.
 
 This page exists so that the answer to "do I need to buy a Keepa
 subscription before I start?" is findable, and the answer is no.

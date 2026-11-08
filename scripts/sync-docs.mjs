@@ -22,14 +22,17 @@
 
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { Buffer } from "node:buffer";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 
 // The contents API rather than raw.githubusercontent.com. The raw host is
 // CDN-cached for a few minutes, so a site deploy triggered right after a
 // docs commit would compare against the previous version and fail for a
 // reason that has nothing to do with the change. The API reflects a commit
-// immediately. GITHUB_TOKEN, when present, only raises the rate limit; the
-// repository is public and the script works without it.
+// immediately. GITHUB_TOKEN is required rather than an optimisation: the
+// product repository is private, so an unauthenticated read of it is
+// indistinguishable from a repository that does not exist — the API
+// answers 404 either way, which is deliberate on GitHub's part and
+// confusing exactly once.
 const API = "https://api.github.com/repos/ciyalabs/biryar/contents";
 const REF = process.env.BIRYAR_DOCS_REF ?? "main";
 const OUT = "src/content/docs";
@@ -102,9 +105,14 @@ async function read(source, from) {
   if (!response.ok) {
     throw new Error(
       `${url} -> HTTP ${response.status} ${response.statusText}. ` +
-        (response.status === 403
-          ? "Rate limited; set GITHUB_TOKEN, or pass a local checkout path."
-          : "Is the path still there?"),
+        (response.status === 404 && !process.env.GITHUB_TOKEN
+          ? "The product repository is private, so an unauthenticated " +
+            "read answers 404 whether or not the path exists. Set " +
+            "GITHUB_TOKEN to a token with read access, or pass a local " +
+            "checkout path."
+          : response.status === 403
+            ? "Rate limited; set GITHUB_TOKEN, or pass a local checkout path."
+            : "Is the path still there?"),
     );
   }
   return response.text();
@@ -150,20 +158,28 @@ function assetUrl(repoPath) {
   return "/" + repoPath;
 }
 
-/** Rewrite a repository-relative markdown link to its page on this site. */
+/**
+ * Rewrite a repository-relative markdown link to its page on this site.
+ *
+ * A link whose target is not a page here used to point at the file on
+ * github.com. The repository is private, so that destination now answers
+ * 404 to everyone who is not a customer — and a link that cannot be
+ * opened is worse than no link, because the reader spends the click
+ * finding out. Those become inline code instead: the sentence still says
+ * which file it means, and promises nothing.
+ */
 function rewriteLinks(body, from) {
-  return body.replace(/\]\(([^)\s]+\.md)(#[^)]*)?\)/g, (whole, target, hash) => {
-    // Resolve the link against the directory of the document it is in,
-    // the way a reader on GitHub would.
-    const resolved = join(dirname(from), target).replaceAll("\\", "/");
-    const page = LINK_TARGET.get(resolved);
-    if (!page) {
-      // Not a page on this site: send the reader to the file on GitHub
-      // rather than leaving a link that 404s here.
-      return `](https://github.com/ciyalabs/biryar/blob/main/${resolved}${hash ?? ""})`;
-    }
-    return `](${page}${hash ?? ""})`;
-  });
+  return body.replace(
+    /\[([^\]]+)\]\(([^)\s]+\.md)(#[^)]*)?\)/g,
+    (whole, text, target, hash) => {
+      // Resolved against the directory of the document it is in, the way
+      // a reader on GitHub would.
+      const resolved = join(dirname(from), target).replaceAll("\\", "/");
+      const page = LINK_TARGET.get(resolved);
+      if (!page) return `\`${basename(resolved)}\``;
+      return `[${text}](${page}${hash ?? ""})`;
+    },
+  );
 }
 
 /**

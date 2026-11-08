@@ -80,29 +80,46 @@ the same sealed row, so nothing downstream behaves differently.
 
 ## What you end up with
 
-**Self-hosting.** Two values, and you get them in step 3. Neither goes in a
-configuration file — you paste them into Biryar once and it seals them:
+**Self-hosting.** Four values. Two you paste into Biryar once and it seals
+them; two go in `.env`, because they belong to the application rather than
+to the authorisation:
 
-| Value | What it is |
-|---|---|
-| Merchant token | Your selling-partner id, shown with the authorisation |
-| Refresh token | The `Atzr|...` string self-authorisation produces |
+| Value | Where it goes | What it is |
+|---|---|---|
+| Merchant token | Pasted into Biryar | Your selling-partner id, shown with the authorisation |
+| Refresh token | Pasted into Biryar | The `Atzr|...` string self-authorisation produces |
+| `BIRYAR_LWA_CLIENT_ID` | `.env` | Your application's Login with Amazon client id |
+| `BIRYAR_LWA_CLIENT_SECRET` | `.env` | The matching secret |
+
+**The LWA pair is not an OAuth setting**, which is easy to get wrong and
+this guide got wrong. A refresh token is not a key that opens anything by
+itself: every use of it is an exchange with Login with Amazon for a
+one-hour access token, and that exchange is authenticated by the
+application's client id and secret. A self-authorisation token is pasted in
+rather than fetched, so it looks as though nothing needs configuring — but
+it is exchanged on every single fetch, exactly like one that arrived by
+OAuth.
+
+Leave them out and Amazon answers `invalid_client`. Biryar treats that as
+terminal, because for every other cause it is, so a perfectly good
+credential would be marked as needing reauthorisation and the screen would
+tell you to reconnect an account that was never the problem. It now refuses
+to store a token it could not exchange, and says which settings are
+missing.
 
 Biryar seals the refresh token with your `BIRYAR_SECRET_KEY` before storing
 it and never shows it again — not in the interface, not in a log, not in an
 API response. There is a test that holds it to that.
 
 **Hosting Biryar for other sellers.** Then you need an application others
-can authorise, and four settings describe it:
+can authorise, which is the LWA pair above plus two more:
 
 | Setting | What it is |
 |---|---|
 | `BIRYAR_AMAZON_APPLICATION_ID` | Public. It identifies your application in the consent URL |
-| `BIRYAR_LWA_CLIENT_ID` | The Login with Amazon client id |
-| `BIRYAR_LWA_CLIENT_SECRET` | The matching secret. This one is a credential |
 | `BIRYAR_AMAZON_REDIRECT_URI` | Where Amazon sends a seller back |
 
-Leave all four empty for a self-hosted install. Biryar then says the OAuth
+Leave those two empty for a self-hosted install. Biryar then says the OAuth
 button is unavailable instead of offering a flow that cannot complete.
 
 ## Step 1 — register as a developer

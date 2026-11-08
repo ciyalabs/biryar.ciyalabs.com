@@ -19,8 +19,10 @@ Nothing else — no Python, no Node, no database to install.
 
 ## Run it
 
+Self-hosting comes with access to the repository. Clone it with the URL
+you were given, then:
+
 ```bash
-git clone https://github.com/ciyalabs/biryar.git
 cd biryar
 cp .env.example .env
 ```
@@ -62,16 +64,29 @@ the person who can already read the database.
 
 ## Connecting Amazon
 
-For a self-hosted install there is **nothing to put in `.env`**. You
-register a private application, authorise it against your own account in
-the Solution Provider Portal, and paste the refresh token it gives you into
-Biryar, which seals it.
+You register a private application, authorise it against your own account
+in the Solution Provider Portal, and paste the refresh token it gives you
+into Biryar, which seals it.
 
-The OAuth settings (`BIRYAR_AMAZON_APPLICATION_ID` and the LWA credentials)
-are for running Biryar *for other sellers*. Leave them empty: a private
-application has no OAuth configuration, so that route answers `MD9100` no
-matter what you put there. Biryar says the button is unavailable rather
-than offering a flow that cannot finish.
+Two settings do go in `.env`, from that same application:
+
+```
+BIRYAR_LWA_CLIENT_ID=
+BIRYAR_LWA_CLIENT_SECRET=
+```
+
+A refresh token is exchanged with Login with Amazon for a one-hour access
+token before every fetch, and that exchange is authenticated by the
+application, not by the token. Without them Amazon answers
+`invalid_client`, which looks exactly like a revoked authorisation. Biryar
+refuses to store a token it could not exchange rather than letting you find
+out that way.
+
+The two genuinely OAuth settings — `BIRYAR_AMAZON_APPLICATION_ID` and
+`BIRYAR_AMAZON_REDIRECT_URI` — are for running Biryar *for other sellers*.
+Leave them empty: a private application has no OAuth configuration, so that
+route answers `MD9100` no matter what you put there, and Biryar says the
+button is unavailable rather than offering a flow that cannot finish.
 
 See [Getting your SP-API keys](/setup/sp-api/), which walks the private-
 application path with screenshots.

@@ -10,9 +10,9 @@ export default defineConfig({
       description:
         'A self-hosted Amazon operations cockpit. Reads your own seller account, ' +
         'measures what Amazon actually charged, and prices from it.',
-      social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/ciyalabs/biryar' },
-      ],
+      // No link to the product repository: it is private. The site is
+      // the public face, and a link that answers 404 to everyone who is
+      // not a customer reads as a broken product rather than a closed one.
       editLink: {
         baseUrl: 'https://github.com/ciyalabs/biryar.ciyalabs.com/edit/main/',
       },

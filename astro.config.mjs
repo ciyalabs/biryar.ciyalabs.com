@@ -23,13 +23,23 @@ export default defineConfig({
       sidebar: [
         { label: 'Start here', items: [
           { label: 'What Biryar is', link: '/' },
+          { label: 'Get Biryar', slug: 'get' },
+          { label: 'Free and Pro', slug: 'plans' },
+          { label: 'Support', slug: 'support' },
+        ]},
+        { label: 'Setting up', items: [
           { label: 'Install', slug: 'setup/install' },
           { label: 'Getting your SP-API keys', slug: 'setup/sp-api' },
           { label: 'Keepa', slug: 'setup/keepa' },
         ]},
+        { label: 'Using it', items: [
+          { label: 'Repricing', slug: 'guide/repricing' },
+          { label: 'Adding a retailer', slug: 'guide/adapters' },
+        ]},
         { label: 'How it works', items: [
           { label: 'How the fees are measured', slug: 'methodology/fees' },
           { label: 'How tenants are kept apart', slug: 'architecture/tenancy' },
+          { label: 'BiryarBot', slug: 'bot' },
         ]},
         { label: 'Reports', items: [
           { label: 'All reports', slug: 'reports' },

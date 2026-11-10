@@ -1,0 +1,108 @@
+---
+title: Get Biryar
+description: Install Biryar on your own machine in four commands, try Pro free for fourteen days, and buy a licence when it has earned it.
+sidebar:
+  order: 0
+---
+
+import { Card, CardGrid, Steps } from '@astrojs/starlight/components';
+
+Biryar runs on your own computer. Installing it is downloading two small
+files and starting one container; there is no account to make with us,
+and nothing you enter ever reaches a server of ours.
+
+## Install
+
+You need [Docker](https://docs.docker.com/get-docker/). Any machine that
+runs it will do: a laptop, a small always-on computer at home, a Raspberry
+Pi, a Mac with an Apple chip.
+
+<Steps>
+
+1. Make a folder and download the two files into it:
+
+   ```bash
+   mkdir biryar && cd biryar
+   curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
+   curl -fsSL  https://biryar.ciyalabs.com/get/env.example -o .env
+   ```
+
+   Or save them by hand: [docker-compose.yml](/get/docker-compose.yml) and
+   [env.example](/get/env.example), the second one renamed to `.env`.
+
+2. Make the key that seals your Amazon credentials, and put it in `.env`
+   after `BIRYAR_SECRET_KEY=`:
+
+   ```bash
+   docker run --rm ghcr.io/ciyalabs/biryar python -c \
+     "from biryar.crypto import Keyring; print('v1:' + Keyring.generate_key())"
+   ```
+
+   Keep a copy of it somewhere that is not this machine.
+
+3. Start it:
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. Open [localhost:8000](http://localhost:8000) and choose **Sign up**. The page asks for
+   the install's setup code, which the server printed when it started:
+
+   ```bash
+   docker compose logs api | grep -A 3 "setup code"
+   ```
+
+</Steps>
+
+The [install guide](/setup/install/) has the rest: two-factor sign-in,
+inviting the people you work with, connecting Amazon, and what to do about
+a forgotten password. Updating later is `docker compose pull && docker
+compose up -d`.
+
+## What you get
+
+<CardGrid>
+  <Card title="Free" icon="open-book">
+    Everything Biryar sees. The whole Portfolio with measured fees and
+    invoice reading, every retailer in Sourcing, and every repricing
+    decision explained and checked with Amazon, as a preview. A free scan
+    covers up to three retailers, twice a day, and shows its best hundred
+    results.
+  </Card>
+  <Card title="Pro" icon="rocket">
+    Everything Biryar does. Prices sent to Amazon on the schedule you set,
+    retailers and repricing kept running by themselves, no scan limits,
+    and retailers you add yourself.
+  </Card>
+</CardGrid>
+
+The full comparison is on [Free and Pro](/plans/). The line is drawn
+between being told and having it done, never between shops or markets.
+
+## Try Pro free
+
+Every install can try Pro for fourteen days, once, with no card: under
+**Settings, Plan**, choose **Try Pro free**. When it ends, the free plan
+carries on with everything you have.
+
+## Buy a licence
+
+**€29 a month, or €290 a year.** One licence covers one business, with as
+many people in it as you like.
+
+A licence is one line of text. You paste it under **Settings, Plan**, and
+Biryar checks it there, on your machine, by its signature. Nothing is sent
+anywhere to check it, so a laptop without a connection keeps working and a
+server of ours being down can never switch your repricer off.
+
+To buy one, write to [info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20Pro%20licence)
+with the name of your business and whether you want a month or a year. You
+get an invoice, and the licence by email as soon as it is paid. Renewing is
+the same; a renewed licence picks up exactly where the old one stopped,
+and nothing is deleted in between.
+
+## Questions
+
+The [support page](/support/) answers the questions that come up during
+installation and in the first weeks, and says how to reach us.

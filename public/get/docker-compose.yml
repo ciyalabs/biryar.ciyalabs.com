@@ -1,0 +1,79 @@
+# Biryar, complete: a database, the API with the interface, and a worker.
+#
+# This is the file at https://biryar.ciyalabs.com/get/docker-compose.yml.
+# Put it in a folder of its own with a .env beside it (the example is at
+# https://biryar.ciyalabs.com/get/env.example), then:
+#
+#     docker compose up -d
+#
+# Updating Biryar is the same command with a pull in front:
+#
+#     docker compose pull && docker compose up -d
+#
+# Each start gets the database ready by itself: the tables this version
+# needs are created or updated, and the restricted database account the
+# program runs as is set up. An update that fails changes nothing and stops
+# the container with the reason in `docker compose logs api`.
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: biryar
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-biryar}
+      POSTGRES_DB: biryar
+    volumes:
+      - biryar-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U biryar -d biryar"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Not published. Nothing outside this file needs to reach the database,
+    # and a PostgreSQL on a public port is how people lose one.
+    expose:
+      - "5432"
+    restart: unless-stopped
+
+  api:
+    image: ghcr.io/ciyalabs/biryar:${BIRYAR_VERSION:-latest}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: &app-env
+      # Two connections on purpose. The program runs as biryar_app, which
+      # owns nothing and cannot bypass the rules that keep one business's
+      # rows from another's. The owner account is used only to prepare the
+      # database at start.
+      BIRYAR_DATABASE_URL: postgresql+psycopg://biryar_app:${BIRYAR_APP_DB_PASSWORD:-biryar_app}@db:5432/biryar
+      BIRYAR_ADMIN_DATABASE_URL: postgresql+psycopg://biryar:${POSTGRES_PASSWORD:-biryar}@db:5432/biryar
+      # No default: this key seals your Amazon credentials. See .env.
+      BIRYAR_SECRET_KEY: "${BIRYAR_SECRET_KEY:?set BIRYAR_SECRET_KEY in .env (see env.example)}"
+      BIRYAR_DEPLOYMENT: self_hosted
+      BIRYAR_SOURCING_REQUEST_DELAY_SECONDS: ${BIRYAR_SOURCING_REQUEST_DELAY_SECONDS:-3}
+      BIRYAR_LWA_CLIENT_ID: ${BIRYAR_LWA_CLIENT_ID:-}
+      BIRYAR_LWA_CLIENT_SECRET: ${BIRYAR_LWA_CLIENT_SECRET:-}
+      BIRYAR_AMAZON_APPLICATION_ID: ${BIRYAR_AMAZON_APPLICATION_ID:-}
+      BIRYAR_AMAZON_REDIRECT_URI: ${BIRYAR_AMAZON_REDIRECT_URI:-}
+      BIRYAR_AMAZON_APPLICATION_IS_DRAFT: ${BIRYAR_AMAZON_APPLICATION_IS_DRAFT:-true}
+    # Retailers you wrote yourself (Pro), as files in ./adapters beside this
+    # compose file. Both services see them: the API lists and checks them,
+    # the worker runs them.
+    volumes: &adapters
+      - ./adapters:/app/adapters:ro
+    ports:
+      - "${BIRYAR_PORT:-8000}:8000"
+    restart: unless-stopped
+
+  worker:
+    image: ghcr.io/ciyalabs/biryar:${BIRYAR_VERSION:-latest}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: *app-env
+    volumes: *adapters
+    command: ["sh", "-c", "python -m biryar.prepare && exec python -m biryar.worker"]
+    restart: unless-stopped
+
+volumes:
+  biryar-db:

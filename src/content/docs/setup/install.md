@@ -15,22 +15,24 @@ runs all three.
 ## What you need
 
 Docker, and an Amazon application if you want to connect a seller account.
-Nothing else — no Python, no Node, no database to install.
+Nothing else: no Python, no Node, no database to install. Any machine that
+runs Docker will do, including a Raspberry Pi or a Mac with an Apple chip.
 
 ## Run it
 
-Self-hosting comes with access to the repository. Clone it with the URL
-you were given, then:
+Biryar is published as one container image. Two small files tell Docker
+how to run it; put them in a folder of their own:
 
 ```bash
-cd biryar
-cp .env.example .env
+mkdir biryar && cd biryar
+curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
+curl -fsSL  https://biryar.ciyalabs.com/get/env.example -o .env
 ```
 
-Generate a sealing key and put it in `.env`:
+Generate a sealing key and put it in `.env` as `BIRYAR_SECRET_KEY`:
 
 ```bash
-docker compose run --rm api python -c \
+docker run --rm ghcr.io/ciyalabs/biryar python -c \
   "from biryar.crypto import Keyring; print('v1:' + Keyring.generate_key())"
 ```
 
@@ -38,29 +40,86 @@ This key encrypts every Amazon credential Biryar stores. **Keep a copy
 somewhere that is not this machine.** Losing it means reconnecting every
 account; leaking it means every credential it sealed is compromised.
 
-Then create the schema, make your account, and start:
+Then start it:
 
 ```bash
-docker compose run --rm api alembic upgrade head
-docker compose run --rm api python -m biryar.init --email you@example.com
 docker compose up -d
 ```
 
-The second command prints a generated password. **Write it down — it is
-shown once** and is not recoverable afterwards. Pass `--password` instead
-if you would rather choose one, though that puts it in your shell history.
+That is all. Every time Biryar starts it gets its database ready by
+itself: it creates or updates the tables this version needs, and sets up
+`biryar_app`, the restricted database account the program actually uses.
+That account matters more than it looks: PostgreSQL lets its own owner
+account ignore the rules that keep one business's data from another's, so
+Biryar never runs as the owner. If the update ever fails, it changes
+nothing, and `docker compose logs api` says why.
 
-Biryar is at <http://localhost:8000>, and that account can sign in.
+## Your account
 
-Migrations are a separate step on purpose. If containers ran them at
-startup, two starting together would both try, and a schema change that
-fails halfway is not something to find out about from a restart loop.
+Open <http://localhost:8000> and choose **Sign up**. The first person to
+sign up becomes the owner, and the page asks for this install's **setup
+code**. The server prints it when it starts with nobody signed up:
 
-Creating the account is a command rather than a sign-up page because a
-sign-up page on a self-hosted install is a door onto the internet whose
-only job is to be used once, and whoever reaches it first becomes the
-owner. Running it from the shell means the person who gets the account is
-the person who can already read the database.
+```bash
+docker compose logs api | grep -A 3 "setup code"
+```
+
+or prints it on request:
+
+```bash
+docker compose run --rm api python -m biryar.init --setup-code
+```
+
+Then a username, your email and a password: twelve characters at least,
+with one that is not a letter or digit, and a capital letter or a digit.
+
+The next screen sets up **two-factor sign-in**. Scan the code with an
+authenticator app (Google Authenticator, Microsoft Authenticator, Aegis,
+1Password or Bitwarden all work) and type the six digits it shows. From
+then on, signing in is your password and a code from the app. It is not
+optional: Biryar holds the keys to your Amazon account, and Amazon asks
+for multi-factor sign-in on any system that holds its data.
+
+Anyone else in the business joins with an **invitation code** you make
+under Settings, Team; the code already says whether they are an owner or
+an assistant.
+
+If you would rather make the owner from the shell, that still works:
+`python -m biryar.init --email you@example.com` prints a generated
+password, shown once.
+
+
+The setup code is why the sign-up page is safe. A sign-up page on a
+self-hosted install is a door onto the internet whose only job is to be
+used once, and without a code whoever reached it first would become the
+owner. With one, the person who becomes owner is a person who can already
+read the server's log or run a command on it: the same authority as the
+database itself.
+
+## A forgotten password, or a lost phone
+
+There is no reset email: a self-hosted install has no mail server, and
+asking you to configure one for the day you forget a password is a worse
+trade than a command. On the machine Biryar runs on:
+
+```bash
+docker compose exec api python -m biryar.passwd --login your-username
+```
+
+prints a new password, shown once (`--ask` prompts for one instead). For a
+lost phone, add `--reset-two-factor`: it forgets the old authenticator,
+signs that person out everywhere, and the next sign-in sets up a new one.
+
+Passwords last a year; Biryar warns two weeks ahead and asks for a new one
+when it runs out.
+
+## Installing it as an app
+
+Biryar is a web page, served by your own machine, and it can be installed
+like an app: in Chrome or Edge, **Install Biryar** from the address bar or
+the menu; in Safari on a Mac, **File → Add to Dock**. It then has its own
+icon and opens in its own window. Nothing is downloaded or signed, and it
+updates when the install does.
 
 ## Connecting Amazon
 
@@ -82,8 +141,8 @@ application, not by the token. Without them Amazon answers
 refuses to store a token it could not exchange rather than letting you find
 out that way.
 
-The two genuinely OAuth settings — `BIRYAR_AMAZON_APPLICATION_ID` and
-`BIRYAR_AMAZON_REDIRECT_URI` — are for running Biryar *for other sellers*.
+The two genuinely OAuth settings, `BIRYAR_AMAZON_APPLICATION_ID` and
+`BIRYAR_AMAZON_REDIRECT_URI`, are for running Biryar *for other sellers*.
 Leave them empty: a private application has no OAuth configuration, so that
 route answers `MD9100` no matter what you put there, and Biryar says the
 button is unavailable rather than offering a flow that cannot finish.
@@ -94,12 +153,12 @@ application path with screenshots.
 ## Seeing real figures before registering anything
 
 You do not need an Amazon application to find out whether this is worth
-your time. Sign in, and on the front page drop in a settlement report:
+your time. Sign in, and on the Portfolio page drop in a settlement report:
 **Reports → Payments → All Statements** in Seller Central, downloaded as
 **Flat File V2**.
 
-Biryar reads it and shows you the period's revenue, what Amazon kept, and —
-once you have loaded costs — what was actually left. **Nothing is stored.**
+Biryar reads it and shows you the period's revenue, what Amazon kept, and,
+once you have loaded costs, what was actually left. **Nothing is stored.**
 The file is read, the figures are shown, and none of it is kept, which also
 means it cannot be double-counted against the feed later.
 
@@ -112,20 +171,24 @@ Two things it will tell you that are worth understanding:
 - **Which fees it did not recognise.** Amazon publishes this report's
   column names but not the vocabulary of its fee descriptions, so a seller
   in an unfamiliar category will have some Biryar has never seen. They are
-  listed, and they are still counted in the total — never silently dropped.
+  listed, and they are still counted in the total, never silently dropped.
 
 This is the fastest route to a real number, and it is the only one that
 needs nothing from Amazon but a download.
 
 ## Getting to a profit figure
 
-Connecting Amazon gets you **gross contribution** — revenue less what Amazon
+Connecting Amazon gets you **gross contribution**: revenue less what Amazon
 and the carrier took. That needs nothing from you and appears as soon as the
 first fetch finishes.
 
 **Net profit needs one more thing from you: what the units cost.** Amazon
-does not know, so Biryar will not guess. Import a cost file — one CSV row
-per invoice line — and the figure appears:
+does not know, so Biryar will not guess. On the Portfolio page, upload a
+supplier's invoice as a PDF (Biryar reads Müller, Saturn, MediaMarkt, NICI
+and Qogita invoices, spreads the delivery over the units, adds the VAT you
+cannot reclaim, and asks you which line is which product before saving
+anything), or type a price under a product. For a whole cost book at once,
+import a CSV, one row per invoice line:
 
 ```
 vendor,doc_number,doc_date,name,qty,unit_price,sku,shipping,prices_include_vat,vat_rate
@@ -146,13 +209,17 @@ that distinction is the whole point.
 ## Upgrading
 
 ```bash
-git pull
-docker compose build
-docker compose run --rm api alembic upgrade head
-docker compose up -d
+docker compose pull && docker compose up -d
 ```
 
-Every migration has a tested downgrade, so a bad upgrade is recoverable:
+The database is updated as Biryar starts. The API and the worker take
+turns, so starting both together is fine, and an update that fails changes
+nothing and stops with the reason in `docker compose logs api`.
+
+`.env` says which version runs: `BIRYAR_VERSION=latest` follows releases,
+and a number such as `BIRYAR_VERSION=0.1.0` stays on that release until you
+change it. Every database update has a tested way back, should a release
+need undoing:
 
 ```bash
 docker compose run --rm api alembic downgrade -1

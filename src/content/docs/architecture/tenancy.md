@@ -62,6 +62,23 @@ nothing.
 kind of property that is true on the day it is written and quietly false
 after someone debugs a permissions problem at midnight.
 
+That last one was true of the tests and false of the product. The
+policies were right, the suite built an unprivileged role and proved
+isolation held for it — and `docker-compose.yml` pointed the
+application at the role `postgres:17-alpine` creates from
+`POSTGRES_USER`, which that image makes a superuser. A superuser is
+exempt from row-level security entirely, `FORCE` or not. Every policy
+described on this page applied to nobody in the one configuration
+people would actually run, and nothing failed to say so.
+
+So there are two connections now. `BIRYAR_ADMIN_DATABASE_URL` is the
+owner; it runs the migrations and `python -m biryar.provision` and
+nothing else. `BIRYAR_DATABASE_URL` is `biryar_app`, which provision
+creates with `NOSUPERUSER NOBYPASSRLS` and grants exactly what the
+application needs. Where the two are the same — a development
+database — the engine says so on its first connection, as a warning
+when self-hosted and a refusal when hosted.
+
 **Transaction-local, never session-wide.** A setting that outlives its
 transaction rides the pooled connection into the next request. The engine
 rejects both spellings of that mistake — a bare `SET`, and `set_config` with

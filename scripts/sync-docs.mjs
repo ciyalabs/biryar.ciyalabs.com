@@ -82,6 +82,36 @@ const PAGES = [
     description:
       "Why isolation is enforced by the database rather than by remembering to filter.",
   },
+  {
+    from: "docs/plans.md",
+    to: "plans.md",
+    title: "Free and Pro",
+    description: "What the free plan includes, what Pro adds, and how a licence works.",
+  },
+  {
+    from: "docs/repricing.md",
+    to: "guide/repricing.md",
+    title: "Repricing",
+    description:
+      "What Biryar charges for your listings, what stops it, and how to switch it on.",
+  },
+  {
+    from: "docs/adapters.md",
+    to: "guide/adapters.md",
+    title: "Adding a retailer",
+    description: "Writing an adapter for a shop Biryar does not ship with.",
+  },
+];
+
+/**
+ * Files served as they are, for the install: the compose file and the
+ * settings example a seller downloads. They live in the product repository
+ * because they name the image and the settings that version reads, and a
+ * copy kept here would be the copy that falls behind.
+ */
+const FILES = [
+  { from: "deploy/docker-compose.yml", to: "public/get/docker-compose.yml" },
+  { from: "deploy/env.example", to: "public/get/env.example" },
 ];
 
 /** Where a relative link in the repository points on this site. */
@@ -263,6 +293,21 @@ for (const repoPath of wanted) {
   console.log(`${current === null ? "added" : "updated"} ${repoPath}`);
 }
 
+// The install files, byte for byte.
+for (const file of FILES) {
+  const bytes = await readBinary(source, file.from);
+  const current = await readFile(file.to).catch(() => null);
+  if (current !== null && current.equals(bytes)) continue;
+
+  if (check) {
+    stale.push(file.from);
+    continue;
+  }
+  await mkdir(dirname(file.to), { recursive: true });
+  await writeFile(file.to, bytes);
+  console.log(`${current === null ? "added" : "updated"} ${file.to}`);
+}
+
 if (check && stale.length) {
   console.error(
     "These pages no longer match ciyalabs/biryar:\n  " +
@@ -273,6 +318,6 @@ if (check && stale.length) {
 }
 if (check) {
   console.log(
-    `${PAGES.length} pages and ${wanted.size} images match the product repository.`,
+    `${PAGES.length} pages, ${wanted.size} images and ${FILES.length} install files match the product repository.`,
   );
 }

@@ -1,0 +1,210 @@
+---
+title: Support
+description: Answers to the questions that come up installing and running Biryar, and how to reach us when they do not cover yours.
+sidebar:
+  order: 1
+---
+
+Most questions below are answered by the install guide or by one of the
+[reports](/reports/), which go deeper than this page can. If yours is not
+here, write to [info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20support)
+and include what `docker compose logs api` and `docker compose logs worker`
+printed around the time of the problem. Never include your `.env`, your
+sealing key or a licence in an email.
+
+## Installing
+
+### `docker: command not found`, or Docker refuses to start
+
+Biryar needs [Docker](https://docs.docker.com/get-docker/) with the
+`compose` plugin, which Docker Desktop and the Linux packages both include.
+On Linux, if `docker ps` says "permission denied", add yourself to the
+`docker` group and sign in again.
+
+### `set BIRYAR_SECRET_KEY in .env`
+
+The sealing key is the one setting without a default. Generate one with
+the command on the [Get page](/get/#install), put it in `.env` after
+`BIRYAR_SECRET_KEY=`, and start again. If `.env` is missing altogether,
+save [env.example](/get/env.example) as `.env` beside the compose file.
+
+### Port 8000 is already in use
+
+Set `BIRYAR_PORT` in `.env` to a free port, for example `8001`, and start
+again. The interface then answers at that port.
+
+### The sign-up page asks for a setup code
+
+It is printed by the server when it starts with nobody signed up:
+
+```bash
+docker compose logs api | grep -A 3 "setup code"
+```
+
+The first person to sign up becomes the owner, and the code is what keeps
+that from being whoever finds the page first. The [install
+guide](/setup/install/#your-account) explains the reasoning.
+
+### I forgot my password, or lost the phone with the authenticator
+
+There is no reset email, because a self-hosted install has no mail server.
+On the machine Biryar runs on:
+
+```bash
+docker compose exec api python -m biryar.passwd --login your-username
+```
+
+prints a new password, shown once. For a lost phone add
+`--reset-two-factor`; the next sign-in sets up a new authenticator.
+
+### Updating
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+The database is updated as Biryar starts. An update that fails changes
+nothing and stops with the reason in `docker compose logs api`.
+
+### Where is my data, and how do I back it up?
+
+In a Docker volume called `biryar-db`, on the machine Biryar runs on, and
+nowhere else. A backup is one command:
+
+```bash
+docker compose exec db pg_dump -U biryar biryar > biryar-backup.sql
+```
+
+Keep the sealing key from `.env` with it: without that key, the Amazon
+credentials in a backup cannot be read.
+
+## Connecting Amazon
+
+### Amazon answers `invalid_client`
+
+`BIRYAR_LWA_CLIENT_ID` and `BIRYAR_LWA_CLIENT_SECRET` in `.env` are
+missing or wrong. Both come from your own application in the Solution
+Provider Portal, and both are needed even when you connect by pasting a
+token: the token is exchanged for a one-hour access token before every
+read, and Amazon checks that exchange against the application. [Getting
+your SP-API keys](/setup/sp-api/) walks through it with screenshots.
+
+### The connect button says it is unavailable, or Amazon answers `MD9100`
+
+A private application has no consent page, so the button route cannot
+work for it; Biryar says so rather than failing halfway through. Connect
+by pasting the refresh token from the Solution Provider Portal instead, as
+the [SP-API guide](/setup/sp-api/) shows.
+
+### I want to see real figures before registering anything
+
+Download a settlement report from Seller Central (**Reports, Payments, All
+Statements**, as Flat File V2) and drop it on the Portfolio page. Biryar
+reads it, shows the period's revenue and what Amazon kept, and stores
+nothing.
+
+## Sourcing
+
+### A shop says it refused Biryar
+
+Biryar identifies itself honestly when it reads a shop (see [the
+bot page](/bot/)). Some shops answer only to browsers and refuse everything
+else, and Biryar does not pretend to be one. Those shops are marked as
+needing a scraping key, which reads them through a service built for it.
+Add one under **Settings, Connections**.
+
+### A scan found nothing
+
+Each retailer's line on the Sourcing page says how much it read and why it
+stopped. The usual reasons: the shop's prices are not below Amazon's after
+the real fees; Keepa does not carry what the shop sells; a key ran out of
+tokens or credits; or the scan read only part of a large shop, in which
+case the next scan carries on from where this one stopped. The [Sourcing
+report](/reports/sourcing/) explains the screening in detail.
+
+### Do I need Keepa?
+
+For sourcing, yes: every barcode a scan finds is looked up on Amazon
+through Keepa. The Portfolio and the repricer do not need it. See
+[Keepa](/setup/keepa/).
+
+### Do I have to leave the computer on?
+
+For scheduled work, yes. Biryar runs on your machine and can only scan or
+reprice while it is awake. Many sellers run it on a small always-on
+computer at home. When a machine wakes up, Biryar picks up where it
+stopped rather than starting again.
+
+## Profit figures
+
+### Profit is blank, or says "needs buy prices"
+
+Biryar will not guess what a unit cost you. Until every sold unit has a
+buy price on file, net profit is left blank rather than counting the
+unpriced ones as free, and the Portfolio page names the products that are
+missing one. Upload a supplier invoice, type a price under a product, or
+import a CSV; the [install guide](/setup/install/#getting-to-a-profit-figure)
+shows the format.
+
+### The profit on a deal is lower than other tools show
+
+Because Biryar uses what Amazon actually took from your own settled sales,
+as a rate plus a flat amount per unit, and on cheap items the flat part
+dominates. A tool that uses the headline referral percentage alone will
+call a deal profitable that is not. [How the fees are
+measured](/methodology/fees/) and the [Portfolio report](/reports/portfolio/)
+show the figures.
+
+## Repricing
+
+### Nothing is being sent to Amazon
+
+Three things must all be true: you are on Pro, sending prices is switched
+on under **Settings, Repricing**, and the listing itself is turned on, on
+the Repricing page. The page says which one is missing. Until all three
+hold, every decision is still made, explained and checked with Amazon, so
+you can see exactly what would happen.
+
+### How often does it run?
+
+On the schedule you set under **Settings, Repricing**: every 15 minutes,
+every hour, every four hours, or once a day. Each pass reads your
+catalogue from Amazon, then prices every listing you turned on; the page
+shows a pass as it runs and when the next one is due. The [Repricing
+report](/reports/repricing/) explains how the safe band and the position
+inside it are decided.
+
+### A price moved and I did not want it to
+
+A price never leaves the floor and ceiling set in Seller Central, and a
+listing that has moved more than 8% in a day waits for your approval before
+moving again. Turn the listing off on the Repricing page, or switch sending
+off under **Settings, Repricing**; decisions keep being recorded, and none
+is applied.
+
+## Licences
+
+### Biryar says the licence does not check out
+
+It was changed between being sent and being pasted, usually by a line
+break or a missing character at the end. Paste the whole line again from
+the email. If it still fails, write to us with the licensee name, never
+with the licence itself.
+
+### Biryar says to update
+
+The licence was signed with a key this version of Biryar does not know
+yet. `docker compose pull && docker compose up -d` brings the version that
+does.
+
+### The licence ended
+
+Nothing is deleted. Listings, decisions, scans, results and schedules all
+stay. Prices are no longer sent and scheduled work stops; a renewed licence
+picks up exactly where the old one left off. See [Free and Pro](/plans/).
+
+## Reaching us
+
+[info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20support). Say
+which version you run (`docker compose images api` prints it) and what the
+logs said. We answer within two working days.

@@ -1,6 +1,6 @@
 ---
 title: Biryar
-description: A multi-tenant Amazon operations platform. Reads your own seller account, measures what Amazon actually charged, and prices from it.
+description: A self-hosted Amazon operations cockpit. Reads your own seller account, measures what Amazon actually charged, and prices from it.
 template: splash
 # Starlight appends the site title to every page title. On the landing page,
 # whose title is already the site name, that renders as "Biryar | Biryar".
@@ -8,12 +8,12 @@ template: splash
 # homepage a title that says what the thing does.
 head:
   - tag: title
-    content: Biryar — Amazon operations, one decision at a time
+    content: "Biryar: Amazon operations, one decision at a time"
 hero:
   tagline: Amazon operations, one decision at a time.
   actions:
-    - text: Install
-      link: /setup/install/
+    - text: Get Biryar
+      link: /get/
       icon: right-arrow
     - text: Read the reports
       link: /reports/
@@ -45,25 +45,36 @@ point of this system is to stop guessing.
 
 <CardGrid>
   <Card title="Your keys, your machine">
-    You register your own application against your own seller account. There is
-    no Biryar server, so there is nowhere for your data to go.
+    You register your own application against your own seller account, and
+    Biryar runs on your own computer. There is no Biryar server, so there is
+    nowhere for your data to go.
   </Card>
-  <Card title="Read-only">
-    No price writes, no listing edits, no messages sent. Release 0.1 cannot
-    change anything in your Amazon account.
+  <Card title="Nothing changes unasked">
+    Sourcing finds and explains; you decide and buy. The repricer sends a
+    price only on Pro, only after you switch it on, only for listings you
+    turned on, and never outside your own floor and ceiling.
   </Card>
   <Card title="One container">
-    No GPU, no second machine, no background cloud workers.
+    No GPU, no second machine, no background cloud workers. Four commands
+    and it runs, on a laptop or a Raspberry Pi.
   </Card>
-  <Card title="Open source">
-    Business Source License 1.1. Run it for your own business; convert to
-    Apache 2.0 in 2030.
+  <Card title="Free sees, Pro acts">
+    The free plan shows you everything Biryar would do. Pro does it, for €29
+    a month. Fourteen days of Pro to try, no card.
   </Card>
 </CardGrid>
 
-## Status
+## What is in it
 
-**Pre-release.** Biryar is being assembled from a private codebase that has been
-running a live Amazon business since September 2026. The
-[reports](/reports/) describe the system as it already works; the
-[install guide](/setup/install/) describes what is still being packaged.
+**Portfolio**: what each product cost you, what it sold for, what Amazon
+and the carrier took, and what was left, from your settlements and your
+invoices. **Sourcing**: your retailers' shelves read, every barcode looked
+up on Amazon, and the deals that survive the real fees. **Repricing**: for
+each listing you turn on, who else sells it, which band of prices is safe,
+where in the band to sit, and a written reason every time.
+
+Reimbursements, a stock forecast, tax figures and business metrics are in
+the interface marked as coming; the [reports](/reports/) describe how they
+work in the system Biryar is built from.
+
+[Get Biryar](/get/), or start with the [install guide](/setup/install/).

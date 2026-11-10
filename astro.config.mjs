@@ -7,6 +7,8 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Biryar',
+      logo: { src: './src/assets/biryar.svg', alt: '' },
+      favicon: '/favicon.svg',
       description:
         'A self-hosted Amazon operations cockpit. Reads your own seller account, ' +
         'measures what Amazon actually charged, and prices from it.',

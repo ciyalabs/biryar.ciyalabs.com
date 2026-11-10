@@ -21,12 +21,18 @@ Biryar needs [Docker](https://docs.docker.com/get-docker/) with the
 On Linux, if `docker ps` says "permission denied", add yourself to the
 `docker` group and sign in again.
 
-### `set BIRYAR_SECRET_KEY in .env`
+### Where is the sealing key, and do I need to do anything with it?
 
-The sealing key is the one setting without a default. Generate one with
-the command on the [Get page](/get/#install), put it in `.env` after
-`BIRYAR_SECRET_KEY=`, and start again. If `.env` is missing altogether,
-save [env.example](/get/env.example) as `.env` beside the compose file.
+Biryar made it on the first start and keeps it on the `biryar-keys` volume.
+The one thing to do is back it up somewhere that is not this machine:
+
+```bash
+docker compose exec api cat /keys/sealing-key
+```
+
+Without it, a backup of the database holds Amazon credentials nobody can
+read. To move to a new machine, put the saved key in a `.env` beside the
+compose file as `BIRYAR_SECRET_KEY=v1:…` before the first start there.
 
 ### Port 8000 is already in use
 
@@ -75,19 +81,22 @@ nowhere else. A backup is one command:
 docker compose exec db pg_dump -U biryar biryar > biryar-backup.sql
 ```
 
-Keep the sealing key from `.env` with it: without that key, the Amazon
-credentials in a backup cannot be read.
+Keep the sealing key with it (`docker compose exec api cat
+/keys/sealing-key`): without that key, the Amazon credentials in a backup
+cannot be read.
 
 ## Connecting Amazon
 
 ### Amazon answers `invalid_client`
 
-`BIRYAR_LWA_CLIENT_ID` and `BIRYAR_LWA_CLIENT_SECRET` in `.env` are
-missing or wrong. Both come from your own application in the Solution
-Provider Portal, and both are needed even when you connect by pasting a
-token: the token is exchanged for a one-hour access token before every
-read, and Amazon checks that exchange against the application. [Getting
-your SP-API keys](/setup/sp-api/) walks through it with screenshots.
+The application's Client ID or Client secret, entered under **Settings,
+Connections**, does not match the application you authorised. Both come
+from your own application in the Solution Provider Portal, under its LWA
+credentials, and both are needed even when you connect by pasting a token:
+the token is exchanged for a one-hour access token before every read, and
+Amazon checks that exchange against the application. Enter them again
+with "Change the application". [Getting your SP-API keys](/setup/sp-api/)
+walks through it with screenshots.
 
 ### The connect button says it is unavailable, or Amazon answers `MD9100`
 
@@ -125,8 +134,8 @@ report](/reports/sourcing/) explains the screening in detail.
 ### Do I need Keepa?
 
 For sourcing, yes: every barcode a scan finds is looked up on Amazon
-through Keepa. The Portfolio and the repricer do not need it. See
-[Keepa](/setup/keepa/).
+through Keepa, and the key goes under **Settings, Connections**. The
+Portfolio and the repricer do not need it. See [Keepa](/setup/keepa/).
 
 ### Do I have to leave the computer on?
 

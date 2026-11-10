@@ -20,39 +20,45 @@ runs Docker will do, including a Raspberry Pi or a Mac with an Apple chip.
 
 ## Run it
 
-Biryar is published as one container image. Two small files tell Docker
-how to run it; put them in a folder of their own:
+Biryar is published as one container image, and one small file tells
+Docker how to run it. Put it in a folder of its own and start it:
 
 ```bash
 mkdir biryar && cd biryar
 curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
-curl -fsSL  https://biryar.ciyalabs.com/get/env.example -o .env
-```
-
-Generate a sealing key and put it in `.env` as `BIRYAR_SECRET_KEY`:
-
-```bash
-docker run --rm ghcr.io/ciyalabs/biryar python -c \
-  "from biryar.crypto import Keyring; print('v1:' + Keyring.generate_key())"
-```
-
-This key encrypts every Amazon credential Biryar stores. **Keep a copy
-somewhere that is not this machine.** Losing it means reconnecting every
-account; leaking it means every credential it sealed is compromised.
-
-Then start it:
-
-```bash
 docker compose up -d
 ```
 
-That is all. Every time Biryar starts it gets its database ready by
-itself: it creates or updates the tables this version needs, and sets up
-`biryar_app`, the restricted database account the program actually uses.
-That account matters more than it looks: PostgreSQL lets its own owner
-account ignore the rules that keep one business's data from another's, so
-Biryar never runs as the owner. If the update ever fails, it changes
-nothing, and `docker compose logs api` says why.
+That is all. Every time Biryar starts it gets itself ready: it creates or
+updates the tables this version needs, and sets up `biryar_app`, the
+restricted database account the program actually uses. That account
+matters more than it looks: PostgreSQL lets its own owner account ignore
+the rules that keep one business's data from another's, so Biryar never
+runs as the owner. If the update ever fails, it changes nothing, and
+`docker compose logs api` says why.
+
+## Your sealing key
+
+On its first start Biryar makes the key that seals every Amazon credential
+it stores, and keeps it on a Docker volume of its own (`biryar-keys`).
+Nothing to generate, nothing to paste. **Keep a copy somewhere that is not
+this machine:**
+
+```bash
+docker compose exec api cat /keys/sealing-key
+```
+
+Losing it means connecting Amazon again; anyone who has it can read what it
+sealed. To move Biryar to another machine, or to bring a key of your own,
+put it in a `.env` file beside the compose file as `BIRYAR_SECRET_KEY=`;
+a key set there is used instead of the file.
+
+## Settings you can change
+
+None are needed. A `.env` file beside the compose file changes the port,
+pins a version, or sets the database passwords; the example at
+<https://biryar.ciyalabs.com/get/env.example> lists every line with what
+it does.
 
 ## Your account
 
@@ -123,29 +129,18 @@ updates when the install does.
 
 ## Connecting Amazon
 
-You register a private application, authorise it against your own account
-in the Solution Provider Portal, and paste the refresh token it gives you
-into Biryar, which seals it.
+Everything is entered under **Settings, Connections**: the Client ID and
+Client secret of your own private application, your merchant token, and
+the refresh token the Solution Provider Portal gives you when you
+authorise that application against your own account. Biryar seals all of
+it on this machine and never shows it again.
 
-Two settings do go in `.env`, from that same application:
-
-```
-BIRYAR_LWA_CLIENT_ID=
-BIRYAR_LWA_CLIENT_SECRET=
-```
-
-A refresh token is exchanged with Login with Amazon for a one-hour access
-token before every fetch, and that exchange is authenticated by the
-application, not by the token. Without them Amazon answers
-`invalid_client`, which looks exactly like a revoked authorisation. Biryar
-refuses to store a token it could not exchange rather than letting you find
-out that way.
-
-The two genuinely OAuth settings, `BIRYAR_AMAZON_APPLICATION_ID` and
-`BIRYAR_AMAZON_REDIRECT_URI`, are for running Biryar *for other sellers*.
-Leave them empty: a private application has no OAuth configuration, so that
-route answers `MD9100` no matter what you put there, and Biryar says the
-button is unavailable rather than offering a flow that cannot finish.
+The Client ID and secret are needed even though you paste a token: the
+token is exchanged with Login with Amazon for a one-hour access token
+before every read, and Amazon checks that exchange against the
+application. Without them Amazon answers `invalid_client`, which looks
+exactly like a revoked authorisation, so Biryar refuses to store a token
+it could not exchange rather than letting you find out that way.
 
 See [Getting your SP-API keys](/setup/sp-api/), which walks the private-
 application path with screenshots.
@@ -227,7 +222,8 @@ docker compose run --rm api alembic downgrade -1
 
 ## Rotating the sealing key
 
-Put the new key first and keep the old one:
+Put the new key first and keep the old one, in `.env` (a key set there
+replaces the one Biryar made):
 
 ```
 BIRYAR_SECRET_KEY=v2:<new>,v1:<old>

@@ -1,11 +1,9 @@
 ---
 title: Biryar
-description: A self-hosted Amazon operations cockpit. Reads your own seller account, measures what Amazon actually charged, and prices from it.
+description: A self-hosted set of agents for an Amazon seller. Reads your own account and your retailers, and hands you one decision at a time with the evidence attached.
 template: splash
 # Starlight appends the site title to every page title. On the landing page,
 # whose title is already the site name, that renders as "Biryar | Biryar".
-# Overriding the tag here fixes the one page it affects and gives the
-# homepage a title that says what the thing does.
 head:
   - tag: title
     content: "Biryar: Amazon operations, one decision at a time"
@@ -22,59 +20,79 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## The claim this is built on
+Biryar is a set of agents that run on your own computer, each one doing a
+part of the work of selling on Amazon, and each one ending in a decision
+that is yours to take: buy or skip, reprice or hold. It never acts on your
+account by itself. It gathers the evidence, writes down what it would do and
+why, and on Pro does the part you have switched on.
 
-Most sellers price against a modelled fee. They take the referral rate from the
-fee schedule, add an estimate for fulfilment, and call the difference margin.
-
-Measured against the Finances feed rather than the fee schedule, the real cut on
-a cheap unit lands between **33% and 43% of the sale price**, not the ~17.85% the
-schedule implies. The gap is made of closing fees, per-unit flat charges, postage
-bought through Buy Shipping, and fee VAT. The schedule either states these
-separately or does not mention them at all.
-
-Biryar does not model the fee. It reads what Amazon actually took, per SKU, per
-order, and derives the break-even from it.
-
-```
-break-even price = (landed cost + flat charges) / (1 - measured rate)
-```
-
-A floor built on a modelled rate is a guess wearing a number's clothes. The whole
-point of this system is to stop guessing.
+## The agents
 
 <CardGrid>
-  <Card title="Your keys, your machine">
-    You register your own application against your own seller account, and
-    Biryar runs on your own computer. There is no Biryar server, so there is
-    nowhere for your data to go.
+  <Card title="Sourcing" icon="magnifier">
+    Reads your retailers' shelves, finds every barcode, looks each one up on
+    Amazon, and keeps what would make money after Amazon's real cut. You
+    watch it read each shop, see why it stopped, and get each deal with its
+    evidence: the shelf price, the Amazon price, the fees as measured from
+    your own sales, the sales rank, who else sells it.
+  </Card>
+  <Card title="Repricing" icon="setting">
+    For each listing you turn on: who else sells it and whether you hold
+    the Featured Offer, which band of prices is safe, where in the band to
+    sit, and a written reason every time. A learner works out the position
+    from your own sales and can never leave the band. On Pro, with sending
+    switched on, the price goes to Amazon on the schedule you set.
+  </Card>
+  <Card title="Portfolio" icon="document">
+    What each product cost you, what it sold for, what Amazon and the
+    carrier took, and what was left, from your settlements and your supplier
+    invoices rather than from a fee table. It leaves profit blank rather
+    than guess a cost it does not have.
+  </Card>
+  <Card title="Coming" icon="rocket">
+    Reimbursements Amazon owes you, a stock forecast, tax figures and
+    business metrics. They are in the sidebar already, marked as coming,
+    and the <a href="/reports/">reports</a> describe them in the system
+    Biryar is built from.
+  </Card>
+</CardGrid>
+
+## What holds it together
+
+<CardGrid>
+  <Card title="Fees as measured, never modelled">
+    Every agent screens and prices against what Amazon actually took from
+    your own settled sales: referral fee, fulfilment, the VAT on those fees,
+    postage, as a rate plus a flat amount per unit. On cheap items the real
+    cut is a third or more of the price, far above the rate on the fee
+    schedule, and a tool that uses the schedule calls deals profitable that
+    are not. <a href="/methodology/fees/">How the fees are measured</a>.
   </Card>
   <Card title="Nothing changes unasked">
     Sourcing finds and explains; you decide and buy. The repricer sends a
     price only on Pro, only after you switch it on, only for listings you
-    turned on, and never outside your own floor and ceiling.
+    turned on, and never outside your own floor and ceiling. Nothing is
+    bought, no listing is edited, no message is sent.
   </Card>
-  <Card title="One container">
-    No GPU, no second machine, no background cloud workers. Four commands
-    and it runs, on a laptop or a Raspberry Pi.
+  <Card title="Your keys, your machine">
+    You register your own application against your own seller account, and
+    Biryar runs on your own computer. There is no Biryar server, so there is
+    nowhere for your data to go, and a licence is checked offline by its
+    signature.
   </Card>
   <Card title="Free sees, Pro acts">
     The free plan shows you everything Biryar would do. Pro does it, for €29
-    a month. Fourteen days of Pro to try, no card.
+    a month. Fourteen days of Pro to try, no card. <a href="/plans/">Free and
+    Pro</a>.
   </Card>
 </CardGrid>
 
-## What is in it
+## Two commands
 
-**Portfolio**: what each product cost you, what it sold for, what Amazon
-and the carrier took, and what was left, from your settlements and your
-invoices. **Sourcing**: your retailers' shelves read, every barcode looked
-up on Amazon, and the deals that survive the real fees. **Repricing**: for
-each listing you turn on, who else sells it, which band of prices is safe,
-where in the band to sit, and a written reason every time.
+```bash
+curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
+docker compose up -d
+```
 
-Reimbursements, a stock forecast, tax figures and business metrics are in
-the interface marked as coming; the [reports](/reports/) describe how they
-work in the system Biryar is built from.
-
-[Get Biryar](/get/), or start with the [install guide](/setup/install/).
+Then open [localhost:8000](http://localhost:8000). [Get Biryar](/get/) has
+the rest; the [support page](/support/) has the answers.

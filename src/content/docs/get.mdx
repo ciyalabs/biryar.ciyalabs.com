@@ -19,46 +19,40 @@ Pi, a Mac with an Apple chip.
 
 <Steps>
 
-1. Make a folder and download the two files into it:
+1. Make a folder, download the one file Docker needs, and start it:
 
    ```bash
    mkdir biryar && cd biryar
    curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
-   curl -fsSL  https://biryar.ciyalabs.com/get/env.example -o .env
-   ```
-
-   Or save them by hand: [docker-compose.yml](/get/docker-compose.yml) and
-   [env.example](/get/env.example), the second one renamed to `.env`.
-
-2. Make the key that seals your Amazon credentials, and put it in `.env`
-   after `BIRYAR_SECRET_KEY=`:
-
-   ```bash
-   docker run --rm ghcr.io/ciyalabs/biryar python -c \
-     "from biryar.crypto import Keyring; print('v1:' + Keyring.generate_key())"
-   ```
-
-   Keep a copy of it somewhere that is not this machine.
-
-3. Start it:
-
-   ```bash
    docker compose up -d
    ```
 
-4. Open [localhost:8000](http://localhost:8000) and choose **Sign up**. The page asks for
+   Or save [docker-compose.yml](/get/docker-compose.yml) by hand and run
+   the last line in its folder. The first start takes a minute: it pulls
+   the image, prepares the database, and makes the key that seals your
+   Amazon credentials.
+
+2. Open [localhost:8000](http://localhost:8000) and choose **Sign up**. The page asks for
    the install's setup code, which the server printed when it started:
 
    ```bash
    docker compose logs api | grep -A 3 "setup code"
    ```
 
+3. Back up the sealing key somewhere that is not this machine. Biryar made
+   it for you on the first start; this prints it:
+
+   ```bash
+   docker compose exec api cat /keys/sealing-key
+   ```
+
 </Steps>
 
-The [install guide](/setup/install/) has the rest: two-factor sign-in,
-inviting the people you work with, connecting Amazon, and what to do about
-a forgotten password. Updating later is `docker compose pull && docker
-compose up -d`.
+Everything else happens in the product: connecting Amazon, adding a Keepa
+key, inviting the people you work with. Nothing is typed into a file. The
+[install guide](/setup/install/) has the details, and the optional settings
+(the port, a pinned version) are in [env.example](/get/env.example).
+Updating later is `docker compose pull && docker compose up -d`.
 
 ## What you get
 

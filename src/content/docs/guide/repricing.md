@@ -79,6 +79,16 @@ about a number — a competitor can move in between, and publishing the
 stale figure would obey the letter of your approval against its
 purpose. One approval lets one move through.
 
+## Switching it off
+
+Three ways, from narrow to wide. Turn one listing off on the Repricing
+page, and only that one stops. Under **Settings, Repricing**, set the
+schedule to *Only when I start one*: the repricer is parked, no pass runs
+on its own, and every listing keeps its switch for when you set a schedule
+again. Or turn off sending prices there: passes still run and decide, and
+nothing is applied. A price already on Amazon stays whatever you choose;
+Biryar never resets one.
+
 ## Switching it on
 
 Three things, and you decide all of them.

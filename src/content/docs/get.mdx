@@ -28,7 +28,8 @@ Pi, a Mac with an Apple chip.
    ```
 
    Or save [docker-compose.yml](/get/docker-compose.yml) by hand and run
-   the last line in its folder. The first start takes a minute: it pulls
+   the last line in its folder. On Windows, in PowerShell, write
+   `curl.exe` instead of `curl`, and make sure Docker Desktop is running. The first start takes a minute: it pulls
    the image, prepares the database, and makes the key that seals your
    Amazon credentials.
 
@@ -38,6 +39,8 @@ Pi, a Mac with an Apple chip.
    ```bash
    docker compose logs api | grep -A 3 "setup code"
    ```
+
+   (PowerShell: `docker compose logs api | Select-String "setup code" -Context 0,3`.)
 
 3. Back up the sealing key somewhere that is not this machine. Biryar made
    it for you on the first start; this prints it:

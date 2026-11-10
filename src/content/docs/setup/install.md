@@ -29,6 +29,11 @@ curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
 docker compose up -d
 ```
 
+On Windows, in PowerShell, the same three lines with one change: write
+`curl.exe` instead of `curl` (PowerShell's own `curl` is a different
+command), and later `Select-String "setup code"` where this guide says
+`grep "setup code"`. Docker Desktop has to be running first.
+
 That is all. Every time Biryar starts it gets itself ready: it creates or
 updates the tables this version needs, and sets up `biryar_app`, the
 restricted database account the program actually uses. That account

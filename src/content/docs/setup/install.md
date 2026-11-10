@@ -14,14 +14,41 @@ runs all three.
 
 ## What you need
 
-Docker, and an Amazon application if you want to connect a seller account.
-Nothing else: no Python, no Node, no database to install. Any machine that
-runs Docker will do, including a Raspberry Pi or a Mac with an Apple chip.
+**A computer that stays on.** Biryar runs on your own machine and can
+only scan or reprice while it is awake. A laptop works for trying it; for
+scheduled passes, a small always-on computer is better. These are all
+fine:
+
+| Machine | Notes |
+|---|---|
+| Windows 10 or 11 PC | 64-bit, with Docker Desktop |
+| Mac | Intel or Apple chip, with Docker Desktop |
+| Linux PC or home server | Docker Engine with the compose plugin |
+| Raspberry Pi 4 or 5 | 64-bit Raspberry Pi OS, 4 GB model or more |
+| A small rented server | Any Linux with Docker; nothing else runs on it |
+
+**What it uses.** Nothing you would notice on a computer from the last
+ten years: about 1 GB of disk for the program and its database, around 300
+MB of memory while running, two processor cores. **No graphics card**, no
+second machine, no account with us. An internet connection, because it
+reads Amazon and your retailers.
+
+**Docker.** The one thing to install first: [Docker
+Desktop](https://docs.docker.com/get-docker/) on Windows and Mac, or
+Docker Engine on Linux. On Linux, if `docker ps` answers "permission
+denied", add yourself to the `docker` group and sign in again.
+
+**An Amazon application**, if you want to connect a seller account:
+[Getting your SP-API keys](/setup/sp-api/) walks through it. You can install
+Biryar and look at a settlement file without one.
 
 ## Run it
 
 Biryar is published as one container image, and one small file tells
-Docker how to run it. Put it in a folder of its own and start it:
+Docker how to run it. Put it in a folder of its own and start it. The
+lines differ only in spelling between systems.
+
+**Linux and Mac**, in a terminal:
 
 ```bash
 mkdir biryar && cd biryar
@@ -29,10 +56,14 @@ curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
 docker compose up -d
 ```
 
-On Windows, in PowerShell, the same three lines with one change: write
-`curl.exe` instead of `curl` (PowerShell's own `curl` is a different
-command), and later `Select-String "setup code"` where this guide says
-`grep "setup code"`. Docker Desktop has to be running first.
+**Windows**, in PowerShell, with Docker Desktop running (`curl.exe`, not
+`curl`: PowerShell's own `curl` is a different command):
+
+```powershell
+mkdir biryar; cd biryar
+curl.exe -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
+docker compose up -d
+```
 
 That is all. Every time Biryar starts it gets itself ready: it creates or
 updates the tables this version needs, and sets up `biryar_app`, the
@@ -75,7 +106,8 @@ code**. The server prints it when it starts with nobody signed up:
 docker compose logs api | grep -A 3 "setup code"
 ```
 
-or prints it on request:
+(Windows, PowerShell: `docker compose logs api | Select-String "setup code" -Context 0,3`.)
+It also prints it on request:
 
 ```bash
 docker compose run --rm api python -m biryar.init --setup-code

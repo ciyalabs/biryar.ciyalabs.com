@@ -1,98 +1,173 @@
 ---
 title: Biryar
-description: A self-hosted set of agents for an Amazon seller. Reads your own account and your retailers, and hands you one decision at a time with the evidence attached.
+description: A program for Amazon sellers that runs on your own computer. It finds products worth buying, works out safe prices, counts your real profit, and leaves every decision to you.
 template: splash
 # Starlight appends the site title to every page title. On the landing page,
 # whose title is already the site name, that renders as "Biryar | Biryar".
 head:
   - tag: title
-    content: "Biryar: Amazon operations, one decision at a time"
+    content: "Biryar: Amazon selling, one decision at a time"
 hero:
-  tagline: Amazon operations, one decision at a time.
+  tagline: Amazon selling, one decision at a time. Biryar finds what is worth buying, works out a safe price, and shows what was really left. You decide.
+  image:
+    # A drawing of the product, not a screenshot: every name and figure in
+    # it is invented. Written against the roles in src/styles/biryar.css,
+    # so it follows the light and dark switch.
+    html: |
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 322" role="img" aria-label="A drawing of Biryar: a deal found in a shop, and a price decision. All figures are invented.">
+        <rect class="d-well" x="0.5" y="0.5" width="479" height="321" rx="16"/>
+        <circle class="d-rest" cx="22" cy="21" r="5"/><circle class="d-rest" cx="39" cy="21" r="5"/><circle class="d-rest" cx="56" cy="21" r="5"/>
+        <text class="d-muted" x="240" y="25" font-size="12" text-anchor="middle">Biryar · on your own computer</text>
+        <line class="d-hair" x1="0" y1="40" x2="480" y2="40"/>
+
+        <rect class="d-box" x="16.5" y="56.5" width="447" height="150" rx="12"/>
+        <circle class="d-green" cx="38" cy="80" r="4.5"/>
+        <text class="d-soft d-tag" x="50" y="84" font-size="11">DEAL FOUND</text>
+        <text class="d-ink d-b" x="34" y="112" font-size="17">Herbal tea sampler, 40 bags</text>
+        <text class="d-muted" x="34" y="132" font-size="12.5">found in a shop you chose · sells about 3 a day</text>
+        <line class="d-hair" x1="34" y1="146" x2="446" y2="146"/>
+        <text class="d-ink d-b d-num" x="34" y="174" font-size="20">€6.90</text>
+        <text class="d-muted" x="34" y="192" font-size="12">on the shelf</text>
+        <text class="d-ink d-b d-num" x="138" y="174" font-size="20">€18.49</text>
+        <text class="d-muted" x="138" y="192" font-size="12">on Amazon</text>
+        <text class="d-ink d-b d-num" x="250" y="174" font-size="20">€5.20</text>
+        <text class="d-muted" x="250" y="192" font-size="12">Amazon takes</text>
+        <text class="d-green d-b d-num" x="362" y="174" font-size="20">€6.39</text>
+        <text class="d-muted" x="362" y="192" font-size="12">left for you</text>
+
+        <rect class="d-box" x="16.5" y="218.5" width="447" height="88" rx="12"/>
+        <circle class="d-blue" cx="38" cy="242" r="4.5"/>
+        <text class="d-soft d-tag" x="50" y="246" font-size="11">PRICE DECISION</text>
+        <text class="d-ink d-b" x="34" y="272" font-size="17">Hold at €21.49</text>
+        <text class="d-muted" x="34" y="291" font-size="12.5">You hold the Featured Offer. Nothing to gain by moving.</text>
+        <text class="d-muted" x="356" y="240" font-size="10.5" text-anchor="middle">floor</text>
+        <text class="d-muted" x="430" y="240" font-size="10.5" text-anchor="middle">ceiling</text>
+        <rect class="d-rest" x="338" y="250" width="110" height="6" rx="3"/>
+        <rect class="d-green" x="356" y="250" width="74" height="6" rx="3"/>
+        <circle class="d-ink" cx="410" cy="253" r="6.5"/>
+      </svg>
   actions:
     - text: Get Biryar
       link: /get/
       icon: right-arrow
-    - text: Read the reports
-      link: /reports/
+    - text: See how it works
+      link: '#how-it-works'
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import Diagram from '../../components/Diagram.astro';
 
-Biryar is a set of agents that run on your own computer, each one doing a
-part of the work of selling on Amazon, and each one ending in a decision
-that is yours to take: buy or skip, reprice or hold. It never acts on your
-account by itself. It gathers the evidence, writes down what it would do and
-why, and on Pro does the part you have switched on.
+Biryar is a program for people who sell on Amazon. It does the reading and
+the arithmetic for three jobs: finding products worth buying, setting
+prices, and working out what you really earned. Each job ends in a
+decision that is yours to take.
 
-## The agents
+<div class="facts not-content">
+  <div>
+    <strong>It runs on your computer</strong>
+    <span>Your figures and your Amazon keys stay with you. There is no Biryar server for them to go to.</span>
+  </div>
+  <div>
+    <strong>It never acts unasked</strong>
+    <span>Nothing is bought, ever. A price is sent only after you switch that on, listing by listing.</span>
+  </div>
+  <div>
+    <strong>Free to look, €29 a month to act</strong>
+    <span>The free plan shows everything Biryar would do. Pro does it. Fourteen days of Pro to try, no card.</span>
+  </div>
+</div>
+
+## How it works
+
+<Diagram name="how-it-works" wide caption="Biryar reads three things, works on your own computer, and hands you three kinds of decision." />
+
+## What it does
 
 <CardGrid>
-  <Card title="Sourcing" icon="magnifier">
-    Reads your retailers' shelves, finds every barcode, looks each one up on
-    Amazon, and keeps what would make money after Amazon's real cut. You
-    watch it read each shop, see why it stopped, and get each deal with its
-    evidence: the shelf price, the Amazon price, the fees as measured from
-    your own sales, the sales rank, who else sells it.
+  <Card title="Sourcing: what is worth buying" icon="magnifier">
+    Biryar reads the shelves of the shops you choose, finds every product
+    with a barcode, and looks each one up on Amazon. It keeps the ones that
+    would still make money after Amazon's real cut, and shows the evidence
+    for each: the shelf price, the Amazon price, the fees, how often it
+    sells. [How Sourcing works](/guide/sourcing/).
   </Card>
-  <Card title="Repricing" icon="setting">
-    For each listing you turn on: who else sells it and whether you hold
-    the Featured Offer, which band of prices is safe, where in the band to
-    sit, and a written reason every time. A learner works out the position
-    from your own sales and can never leave the band. On Pro, with sending
-    switched on, the price goes to Amazon on the schedule you set.
+  <Card title="Repricing: what to charge" icon="setting">
+    For each listing you turn on, Biryar looks at who else sells it,
+    works out the band of prices that is safe, and picks a price inside
+    it, with a written reason every time. It can never go below your
+    break-even or outside your own minimum and maximum.
+    [How Repricing works](/guide/repricing/).
   </Card>
-  <Card title="Portfolio" icon="document">
+  <Card title="Portfolio: what was left" icon="document">
     What each product cost you, what it sold for, what Amazon and the
-    carrier took, and what was left, from your settlements and your supplier
-    invoices rather than from a fee table. It leaves profit blank rather
-    than guess a cost it does not have.
+    carrier took, and what was left. From your own payouts and your own
+    supplier invoices, never from a fee table. Where it does not know a
+    cost, it leaves profit blank and does not guess.
+    [How the Portfolio works](/guide/portfolio/).
   </Card>
-  <Card title="Coming" icon="rocket">
-    Reimbursements Amazon owes you, a stock forecast, tax figures and
-    business metrics. They are in the sidebar already, marked as coming,
-    and the <a href="/reports/">reports</a> describe them in the system
-    Biryar is built from.
+  <Card title="Still to come" icon="rocket">
+    Money Amazon owes you for lost or damaged stock, a stock forecast, tax
+    figures and business metrics. They are in Biryar's menu already,
+    marked "Soon", and the [reports](/reports/) describe them in the
+    system Biryar is built from.
   </Card>
 </CardGrid>
 
-## What holds it together
+## Why it is different
 
 <CardGrid>
-  <Card title="Fees as measured, never modelled">
-    Every agent screens and prices against what Amazon actually took from
-    your own settled sales: referral fee, fulfilment, the VAT on those fees,
-    postage, as a rate plus a flat amount per unit. On cheap items the real
-    cut is a third or more of the price, far above the rate on the fee
-    schedule, and a tool that uses the schedule calls deals profitable that
-    are not. <a href="/methodology/fees/">How the fees are measured</a>.
+  <Card title="Real fees, not the fee table">
+    Biryar works from what Amazon actually kept from your own sales. On a
+    cheap product that is a third of the price or more, far above the
+    percentage on the fee table, and a tool that trusts the table calls
+    deals profitable that are not.
+    [How the fees are measured](/methodology/fees/).
   </Card>
-  <Card title="Nothing changes unasked">
-    Sourcing finds and explains; you decide and buy. The repricer sends a
-    price only on Pro, only after you switch it on, only for listings you
-    turned on, and never outside your own floor and ceiling. Nothing is
-    bought, no listing is edited, no message is sent.
+  <Card title="Every decision comes with its reason">
+    A deal shows its evidence. A price shows why it moved, or why it did
+    not. When something stops, Biryar says what stopped it and what to do,
+    in plain words.
   </Card>
-  <Card title="Your keys, your machine">
-    You register your own application against your own seller account, and
-    Biryar runs on your own computer. There is no Biryar server, so there is
-    nowhere for your data to go, and a licence is checked offline by its
-    signature.
+  <Card title="Your keys, your computer">
+    You connect your own Amazon account with your own application, and
+    Biryar runs on your own machine. A licence is checked there too, so
+    nothing depends on a server of ours.
+    [Where your data lives](/methodology/your-data/).
   </Card>
   <Card title="Free sees, Pro acts">
-    The free plan shows you everything Biryar would do. Pro does it, for €29
-    a month. Fourteen days of Pro to try, no card. <a href="/plans/">Free and
-    Pro</a>.
+    Every shop and every screen is on the free plan. Pro sends prices to
+    Amazon and keeps things running by themselves, for €29 a month.
+    [Free and Pro](/plans/).
   </Card>
 </CardGrid>
 
-## Two commands
+## From nothing to your first deal
 
-```bash
-curl -fsSLO https://biryar.ciyalabs.com/get/docker-compose.yml
-docker compose up -d
-```
+<div class="path not-content">
+  <div>
+    <strong>Install</strong>
+    <span>Three lines, typed once, on a computer that stays on.</span>
+  </div>
+  <div>
+    <strong>Sign up</strong>
+    <span>A password and a code from your phone.</span>
+  </div>
+  <div>
+    <strong>Connect Amazon</strong>
+    <span>Your own account, with your own permission.</span>
+  </div>
+  <div>
+    <strong>Add a Keepa key</strong>
+    <span>Only needed for looking for deals.</span>
+  </div>
+  <div>
+    <strong>Run a scan</strong>
+    <span>Pick a few shops and watch it work.</span>
+  </div>
+</div>
 
-Then open [localhost:8000](http://localhost:8000). [Get Biryar](/get/) has
-the rest; the [support page](/support/) has the answers.
+<CardGrid>
+  <LinkCard title="Get Biryar" description="Install it, try Pro free for fourteen days, and buy a licence when it has earned it." href="/get/" />
+  <LinkCard title="Words used here" description="Featured Offer, floor, pass, token: every term on this site in one plain sentence." href="/words/" />
+</CardGrid>

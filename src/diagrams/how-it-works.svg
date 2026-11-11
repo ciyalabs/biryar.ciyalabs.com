@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 318" role="img" aria-labelledby="t-how-it-works">
+<title id="t-how-it-works">Biryar reads your retailers, your Amazon account and Keepa, on your own computer, and gives you deals, prices and profit to decide on.</title>
+<style>
+  svg { background: #fff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .d-ink { fill: #17181c } .d-soft { fill: #45464d } .d-muted { fill: #7b7c84 }
+  .d-accent { fill: #c8102e } .d-blue { fill: #2a78d6 } .d-green { fill: #1c8a45 }
+  .d-amber { fill: #b87400 } .d-orange { fill: #eb6834 } .d-on { fill: #fff } .d-rest { fill: #d9dae0 }
+  .d-box { fill: #fff; stroke: #d9dae0 } .d-well { fill: #f5f6f8; stroke: #d9dae0 }
+  .d-hair { stroke: #d9dae0; fill: none } .d-rule { stroke: #7b7c84; stroke-width: 1.5; fill: none }
+  .d-s-accent { stroke: #c8102e; fill: none } .d-s-blue { stroke: #2a78d6; fill: none }
+  .d-s-green { stroke: #1c8a45; fill: none } .d-s-amber { stroke: #b87400; fill: none }
+  .d-s-muted { stroke: #7b7c84; fill: none } .d-ring { stroke: #f5f6f8; stroke-width: 2 }
+  .d-wash-blue { fill: #2a78d6; fill-opacity: .12 } .d-wash-green { fill: #1c8a45; fill-opacity: .14 }
+  .d-wash-accent { fill: #c8102e; fill-opacity: .12 } .d-wash-amber { fill: #b87400; fill-opacity: .16 }
+  .d-b { font-weight: 600 } .d-num { font-variant-numeric: tabular-nums }
+</style>
+<defs><marker id="ah-how" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0.5 L7.5,4 L0,7.5 z" class="d-blue"/></marker></defs>
+<text x="0" y="24" font-size="13" class="d-ink d-b">What it reads</text>
+<text x="560" y="62" font-size="13" class="d-ink d-b">What you get, and decide</text>
+<rect class="d-box" x="0.5" y="40.5" width="199" height="56" rx="10"/>
+<text x="16" y="64" font-size="13" class="d-ink d-b">Your retailers' shops</text>
+<text x="16" y="82" font-size="11.5" class="d-muted">shelf prices, read politely</text>
+<line class="d-s-blue" stroke-width="1.8" x1="204" y1="68" x2="264" y2="68" marker-end="url(#ah-how)"/>
+<rect class="d-box" x="0.5" y="128.5" width="199" height="56" rx="10"/>
+<text x="16" y="152" font-size="13" class="d-ink d-b">Your Amazon account</text>
+<text x="16" y="170" font-size="11.5" class="d-muted">sales, fees, listings, stock</text>
+<line class="d-s-blue" stroke-width="1.8" x1="204" y1="156" x2="264" y2="156" marker-end="url(#ah-how)"/>
+<rect class="d-box" x="0.5" y="216.5" width="199" height="56" rx="10"/>
+<text x="16" y="240" font-size="13" class="d-ink d-b">Keepa</text>
+<text x="16" y="258" font-size="11.5" class="d-muted">Amazon prices, by barcode</text>
+<line class="d-s-blue" stroke-width="1.8" x1="204" y1="244" x2="264" y2="244" marker-end="url(#ah-how)"/>
+<rect class="d-well" x="270.5" y="14.5" width="219" height="290" rx="14"/>
+<text x="290" y="42" font-size="15" class="d-ink d-b">Biryar</text>
+<text x="290" y="60" font-size="12" class="d-muted">runs on your own computer</text>
+<rect class="d-box" x="286.5" y="78.5" width="187" height="58" rx="8"/>
+<rect class="d-blue" x="286" y="88" width="4" height="38" rx="2"/>
+<text x="304" y="103" font-size="13" class="d-ink d-b">Sourcing</text>
+<text x="304" y="121" font-size="11.5" class="d-muted">finds what would make money</text>
+<line class="d-s-blue" stroke-width="1.8" x1="494" y1="107" x2="554" y2="107" marker-end="url(#ah-how)"/>
+<rect class="d-box" x="560.5" y="78.5" width="199" height="58" rx="10"/>
+<text x="576" y="103" font-size="13" class="d-ink d-b">Deals, with the evidence</text>
+<text x="576" y="121" font-size="11.5" class="d-muted">you buy, or you skip</text>
+<rect class="d-box" x="286.5" y="150.5" width="187" height="58" rx="8"/>
+<rect class="d-green" x="286" y="160" width="4" height="38" rx="2"/>
+<text x="304" y="175" font-size="13" class="d-ink d-b">Repricing</text>
+<text x="304" y="193" font-size="11.5" class="d-muted">works out a safe price</text>
+<line class="d-s-blue" stroke-width="1.8" x1="494" y1="179" x2="554" y2="179" marker-end="url(#ah-how)"/>
+<rect class="d-box" x="560.5" y="150.5" width="199" height="58" rx="10"/>
+<text x="576" y="175" font-size="13" class="d-ink d-b">A price, with a reason</text>
+<text x="576" y="193" font-size="11.5" class="d-muted">you let it be sent, or not</text>
+<rect class="d-box" x="286.5" y="222.5" width="187" height="58" rx="8"/>
+<rect class="d-accent" x="286" y="232" width="4" height="38" rx="2"/>
+<text x="304" y="247" font-size="13" class="d-ink d-b">Portfolio</text>
+<text x="304" y="265" font-size="11.5" class="d-muted">counts what was really left</text>
+<line class="d-s-blue" stroke-width="1.8" x1="494" y1="251" x2="554" y2="251" marker-end="url(#ah-how)"/>
+<rect class="d-box" x="560.5" y="222.5" width="199" height="58" rx="10"/>
+<text x="576" y="247" font-size="13" class="d-ink d-b">Profit per product</text>
+<text x="576" y="265" font-size="11.5" class="d-muted">you see what is worth selling</text>
+</svg>

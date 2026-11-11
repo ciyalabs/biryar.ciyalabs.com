@@ -9,3 +9,182 @@
   --sl-color-accent: #c8102e;
   --sl-color-accent-high: #6b0a19;
 }
+
+/* -- diagrams ---------------------------------------------------------------
+
+   Every drawing on this site is an inline SVG written against the roles
+   below, never against a colour. That is what lets one file follow the
+   theme switch: the roles are redefined per theme here, in one place, and
+   a drawing that names "ink" is dark on light and light on dark without
+   knowing which it is.
+
+   The blue, green and amber are the ones the product itself uses for
+   "running", "good" and "waiting", so a drawing of a screen reads like
+   the screen. */
+:root {
+  --d-ink: #f0efec;
+  --d-soft: #c3c2b7;
+  --d-muted: #8d8b85;
+  --d-line: #3a3a37;
+  --d-panel: #1f2026;
+  --d-panel-2: #272830;
+  --d-accent: #e0314b;
+  --d-blue: #3987e5;
+  --d-green: #2fae5c;
+  --d-amber: #c98500;
+  --d-on-fill: #ffffff;
+}
+:root[data-theme='light'] {
+  --d-ink: #17181c;
+  --d-soft: #45464d;
+  --d-muted: #7b7c84;
+  --d-line: #d9dae0;
+  --d-panel: #f5f6f8;
+  --d-panel-2: #ffffff;
+  --d-accent: #c8102e;
+  --d-blue: #2a78d6;
+  --d-green: #1c8a45;
+  --d-amber: #b87400;
+  --d-on-fill: #ffffff;
+}
+
+figure.diagram {
+  margin: 1.75rem 0;
+  padding: 1rem 1rem 0.75rem;
+  border: 1px solid var(--d-line);
+  border-radius: 0.75rem;
+  background: var(--d-panel);
+  /* A drawing has words in it, and words stop being readable when a wide
+     drawing is squeezed onto a phone. So it keeps a width it can be read
+     at and scrolls sideways inside its own frame instead. */
+  overflow-x: auto;
+}
+figure.diagram svg {
+  display: block;
+  width: 100%;
+  min-width: 30rem;
+  height: auto;
+  font-family: var(--sl-font), system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+figure.diagram.narrow svg { min-width: 22rem; max-width: 34rem; margin-inline: auto; }
+figure.diagram.wide svg { min-width: 40rem; }
+figure.diagram figcaption {
+  margin-top: 0.6rem;
+  font-size: var(--sl-text-sm);
+  color: var(--d-muted);
+  text-align: center;
+}
+
+.d-ink { fill: var(--d-ink); }
+.d-soft { fill: var(--d-soft); }
+.d-muted { fill: var(--d-muted); }
+.d-accent { fill: var(--d-accent); }
+.d-blue { fill: var(--d-blue); }
+.d-green { fill: var(--d-green); }
+.d-amber { fill: var(--d-amber); }
+.d-on { fill: var(--d-on-fill); }
+.d-box { fill: var(--d-panel-2); stroke: var(--d-line); stroke-width: 1; }
+.d-well { fill: var(--d-panel); stroke: var(--d-line); stroke-width: 1; }
+.d-hair { stroke: var(--d-line); stroke-width: 1; fill: none; }
+.d-rule { stroke: var(--d-muted); stroke-width: 1.5; fill: none; }
+.d-s-accent { stroke: var(--d-accent); fill: none; }
+.d-s-blue { stroke: var(--d-blue); fill: none; }
+.d-s-green { stroke: var(--d-green); fill: none; }
+.d-s-amber { stroke: var(--d-amber); fill: none; }
+.d-s-muted { stroke: var(--d-muted); fill: none; }
+.d-wash-blue { fill: var(--d-blue); fill-opacity: 0.12; }
+.d-wash-green { fill: var(--d-green); fill-opacity: 0.14; }
+.d-wash-accent { fill: var(--d-accent); fill-opacity: 0.12; }
+.d-wash-amber { fill: var(--d-amber); fill-opacity: 0.16; }
+.d-b { font-weight: 600; }
+.d-num { font-variant-numeric: tabular-nums; }
+
+/* -- the landing page --------------------------------------------------------- */
+
+/* The drawing beside the title is a picture of the product, so it gets the
+   room a screenshot would. */
+.hero > .hero-html { width: 100% !important; max-width: 30rem; }
+.hero > .hero-html svg {
+  width: 100%;
+  height: auto;
+  font-family: var(--sl-font), system-ui, sans-serif;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.28));
+}
+:root[data-theme='light'] .hero > .hero-html svg {
+  filter: drop-shadow(0 14px 30px rgba(20, 24, 40, 0.14));
+}
+/* Starlight gives the picture a little over a third of the row. This one
+   has words in it, so it gets half. */
+@media (min-width: 50rem) {
+  .hero { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* Three plain facts under the title, for someone deciding in ten seconds
+   whether to read on. */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0 2rem;
+}
+.facts > div {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--sl-color-gray-6);
+}
+:root[data-theme='light'] .facts > div { background: var(--sl-color-gray-7); }
+.facts strong { display: block; color: var(--sl-color-white); font-size: var(--sl-text-lg); }
+.facts span { color: var(--sl-color-gray-2); font-size: var(--sl-text-sm); }
+.facts > div > * { margin: 0 !important; }
+
+/* Numbered steps that read across on a wide screen and down on a phone. */
+.path {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0 1.75rem;
+  counter-reset: path;
+}
+.path > div {
+  counter-increment: path;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem 1rem;
+  position: relative;
+}
+.path > div::before {
+  content: counter(path);
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--sl-color-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: var(--sl-text-sm);
+  margin-bottom: 0.45rem;
+}
+.path strong { display: block; color: var(--sl-color-white); }
+.path span { color: var(--sl-color-gray-2); font-size: var(--sl-text-sm); }
+.path > div > * { margin: 0 !important; }
+
+/* Cards lift a little under the pointer: they are the page's signposts. */
+.card { transition: border-color 0.15s ease, transform 0.15s ease; }
+.card:hover { border-color: var(--sl-color-accent); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  .card:hover { transform: none; }
+}
+
+/* Tables read better a touch smaller, with a quiet header. */
+.sl-markdown-content table { font-size: var(--sl-text-sm); }
+.sl-markdown-content th { color: var(--sl-color-gray-2); font-weight: 600; }
+
+/* Roles the drawings use beyond the first set. */
+.d-orange { fill: #d95926; }
+:root[data-theme='light'] .d-orange { fill: #eb6834; }
+.d-rest { fill: var(--d-line); }
+.d-ring { stroke: var(--d-panel); stroke-width: 2; }
+.d-tag { letter-spacing: 0.08em; font-weight: 600; }

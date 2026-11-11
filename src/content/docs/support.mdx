@@ -5,12 +5,12 @@ sidebar:
   order: 1
 ---
 
-Most questions below are answered by the install guide or by one of the
-[reports](/reports/), which go deeper than this page can. If yours is not
-here, write to [info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20support)
-and include what `docker compose logs api` and `docker compose logs worker`
-printed around the time of the problem. Never include your `.env`, your
-sealing key or a licence in an email.
+The questions that come up while installing Biryar and in the first
+weeks of using it, each with a short answer and a link to the page that
+goes further. If yours is not here, write to
+[info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20support).
+
+Words you do not know are explained in [Words used here](/words/).
 
 ## Installing
 
@@ -51,17 +51,20 @@ The first person to sign up becomes the owner, and the code is what keeps
 that from being whoever finds the page first. The [install
 guide](/setup/install/#your-account) explains the reasoning.
 
-### I forgot my password, or lost the phone with the authenticator
+### I forgot my password or my username, or lost my phone
 
-There is no reset email, because a self-hosted install has no mail server.
-On the machine Biryar runs on:
+Nobody can email you a reset link, because Biryar runs on your computer
+and not on ours. You get back in on the computer Biryar runs on, by
+pasting one line into a terminal. There is nothing in it to change:
 
 ```bash
-docker compose exec api python -m biryar.passwd --login your-username
+docker exec -it biryar-api-1 biryar-password
 ```
 
-prints a new password, shown once. For a lost phone add
-`--reset-two-factor`; the next sign-in sets up a new authenticator.
+It shows the accounts on that computer, so a forgotten username is
+covered, then lets you choose a new password or set up a new phone.
+[Getting back in](/setup/getting-back-in/) goes through it step by step,
+including how to open a terminal and how to do it without one.
 
 ### Updating
 
@@ -72,10 +75,18 @@ docker compose pull && docker compose up -d
 The database is updated as Biryar starts. An update that fails changes
 nothing and stops with the reason in `docker compose logs api`.
 
+### Biryar does not open after the computer was restarted
+
+Biryar comes back by itself once Docker is running. On Windows and Mac
+that means Docker Desktop has to be started; you can have it start when
+you sign in, under its General settings. Give it a few seconds, then see
+[after the machine restarts](/setup/install/#after-the-machine-restarts).
+
 ### Where is my data, and how do I back it up?
 
-In a Docker volume called `biryar-db`, on the machine Biryar runs on, and
-nowhere else. A backup is one command:
+On the computer Biryar runs on, and nowhere else: see
+[Where your data lives](/methodology/your-data/). A backup is one command,
+typed in the `biryar` folder:
 
 ```bash
 docker compose exec db pg_dump -U biryar biryar > biryar-backup.sql
@@ -95,15 +106,15 @@ from your own application in the Solution Provider Portal, under its LWA
 credentials, and both are needed even when you connect by pasting a token:
 the token is exchanged for a one-hour access token before every read, and
 Amazon checks that exchange against the application. Enter them again
-with "Change the application". [Getting your SP-API keys](/setup/sp-api/)
-walks through it with screenshots.
+with "Change the application". [Connecting Amazon](/setup/sp-api/) walks
+through it with screenshots.
 
 ### The connect button says it is unavailable, or Amazon answers `MD9100`
 
 A private application has no consent page, so the button route cannot
 work for it; Biryar says so rather than failing halfway through. Connect
 by pasting the refresh token from the Solution Provider Portal instead, as
-the [SP-API guide](/setup/sp-api/) shows.
+[Connecting Amazon](/setup/sp-api/) shows.
 
 ### I want to see real figures before registering anything
 
@@ -114,13 +125,37 @@ nothing.
 
 ## Sourcing
 
+### What do "needs ScraperAPI" and "no key needed" mean?
+
+Every shop in the list says one or the other. **No key needed** means
+Biryar reads the shop directly. **Needs ScraperAPI** means the shop turns
+programs away, so Biryar reads it through ScraperAPI, a paid service you
+hold your own account with. Five of the shops Biryar ships with need no
+key. [ScraperAPI](/setup/scraperapi/) lists them all.
+
+### Biryar says my ScraperAPI credits are used up
+
+Then nothing is wrong with the shop or with Biryar: the ScraperAPI account
+has no credits left. Top it up, or wait for its monthly refill. Shops kept
+running by themselves try again once an hour and carry on from where they
+stopped. Shops marked "no key needed" are not affected.
+
+### I set a shop to run several times a day and nothing happened
+
+Three things to check under **Settings, Sourcing**. The retailer has to
+be switched on; you have to press **Save changes**, because nothing
+changes until you do; and keeping shops running by themselves is part of
+Pro. The first pass starts within a minute or two of saving, and the
+Sourcing page shows it in the card called **Running by itself**.
+[Sourcing](/guide/sourcing/#shops-that-keep-running-by-themselves)
+explains the rules.
+
 ### A shop says it refused Biryar
 
-Biryar identifies itself honestly when it reads a shop (see [the
-bot page](/bot/)). Some shops answer only to browsers and refuse everything
-else, and Biryar does not pretend to be one. Those shops are marked as
-needing a scraping key, which reads them through a service built for it.
-Add one under **Settings, Connections**.
+Biryar says honestly that it is a program when it reads a shop (see
+[the bot page](/bot/)). Some shops answer only to browsers and refuse
+everything else, and Biryar does not pretend to be one. Those shops are
+marked **needs ScraperAPI**. Add a key under **Settings, Connections**.
 
 ### A scan found nothing
 
@@ -128,21 +163,32 @@ Each retailer's line on the Sourcing page says how much it read and why it
 stopped. The usual reasons: the shop's prices are not below Amazon's after
 the real fees; Keepa does not carry what the shop sells; a key ran out of
 tokens or credits; or the scan read only part of a large shop, in which
-case the next scan carries on from where this one stopped. The [Sourcing
-report](/reports/sourcing/) explains the screening in detail.
+case the next scan carries on from where this one stopped.
+[Sourcing](/guide/sourcing/#why-a-scan-stopped) lists every reason and
+what to do about it.
 
-### Do I need Keepa?
+### Do I need Keepa? And how many tokens will I use?
 
 For sourcing, yes: every barcode a scan finds is looked up on Amazon
-through Keepa, and the key goes under **Settings, Connections**. The
-Portfolio and the repricer do not need it. See [Keepa](/setup/keepa/).
+through Keepa, one token each, and the key goes under **Settings,
+Connections**. The Portfolio and the repricer do not need it. Under
+**Settings, Sourcing**, the note **What this schedule costs** shows how
+many tokens a day your schedule spends against what your Keepa plan
+refills. See [Keepa](/setup/keepa/).
+
+### What is the Keepa link beside a deal for?
+
+It opens that product's page on Keepa, with the history of its price and
+sales rank on Amazon. A deal is a fact about today's prices, so it is
+worth a look before buying: a price that has only just risen may fall
+back.
 
 ### Do I have to leave the computer on?
 
-For scheduled work, yes. Biryar runs on your machine and can only scan or
+For scheduled work, yes. Biryar runs on your computer and can only scan or
 reprice while it is awake. Many sellers run it on a small always-on
-computer at home. When a machine wakes up, Biryar picks up where it
-stopped rather than starting again.
+computer at home. When a computer wakes up, Biryar picks up where it
+stopped and does not start again.
 
 ## Profit figures
 
@@ -152,8 +198,8 @@ Biryar will not guess what a unit cost you. Until every sold unit has a
 buy price on file, net profit is left blank rather than counting the
 unpriced ones as free, and the Portfolio page names the products that are
 missing one. Upload a supplier invoice, type a price under a product, or
-import a CSV; the [install guide](/setup/install/#getting-to-a-profit-figure)
-shows the format.
+import a list; [Portfolio](/guide/portfolio/#giving-biryar-your-buy-prices)
+shows how.
 
 ### The profit on a deal is lower than other tools show
 
@@ -161,8 +207,7 @@ Because Biryar uses what Amazon actually took from your own settled sales,
 as a rate plus a flat amount per unit, and on cheap items the flat part
 dominates. A tool that uses the headline referral percentage alone will
 call a deal profitable that is not. [How the fees are
-measured](/methodology/fees/) and the [Portfolio report](/reports/portfolio/)
-show the figures.
+measured](/methodology/fees/) shows it with figures and a chart.
 
 ## Repricing
 
@@ -179,9 +224,23 @@ you can see exactly what would happen.
 On the schedule you set under **Settings, Repricing**: every 15 minutes,
 every hour, every four hours, or once a day. Each pass reads your
 catalogue from Amazon, then prices every listing you turned on; the page
-shows a pass as it runs and when the next one is due. The [Repricing
-report](/reports/repricing/) explains how the safe band and the position
+shows a pass as it runs and when the next one is due.
+[Repricing](/guide/repricing/) explains how the safe band and the position
 inside it are decided.
+
+### The Repricing page says "Queued"
+
+The pass is waiting its turn and starts by itself. Repricing has its own
+place in the queue, so a long Sourcing scan does not hold it up; a wait of
+more than a minute or two usually means another repricing pass is still
+running.
+
+### A price is "waiting for you"
+
+That listing has moved more than 8% from its first price of the day, so
+the next move needs your say. It is on the Repricing page under **Waiting
+for you**, with Approve and Reject. Approving lets the next pass make one
+move, at a price worked out then.
 
 ### A price moved and I did not want it to
 
@@ -214,6 +273,17 @@ picks up exactly where the old one left off. See [Free and Pro](/plans/).
 
 ## Reaching us
 
-[info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20support). Say
-which version you run (`docker compose images api` prints it) and what the
-logs said. We answer within two working days.
+[info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20support). We
+answer within two working days.
+
+It helps to say which version you run and what Biryar printed around the
+time of the problem. Both come from the `biryar` folder:
+
+```bash
+docker compose images api
+docker compose logs api
+docker compose logs worker
+```
+
+Never put your sealing key, a licence or a file called `.env` in an
+email.

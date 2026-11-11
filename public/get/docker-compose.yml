@@ -66,13 +66,15 @@ services:
       BIRYAR_AMAZON_APPLICATION_ID: ${BIRYAR_AMAZON_APPLICATION_ID:-}
       BIRYAR_AMAZON_REDIRECT_URI: ${BIRYAR_AMAZON_REDIRECT_URI:-}
       BIRYAR_AMAZON_APPLICATION_IS_DRAFT: ${BIRYAR_AMAZON_APPLICATION_IS_DRAFT:-true}
-    # The sealing key, on a volume of its own, and retailers you wrote
-    # yourself (Pro) as files in ./adapters beside this compose file. Both
-    # services see them: the API lists and checks the adapters, the worker
-    # runs them.
+    # The sealing key, on a volume of its own, and the retailers you add
+    # yourself under Settings, Sourcing (Pro), on another. Both services
+    # see both: the API checks and saves a retailer, the worker runs it.
+    # A volume and not a folder beside this file, because Biryar has to be
+    # able to write there, and a folder Docker makes on the host belongs
+    # to root.
     volumes: &mounts
       - biryar-keys:/keys
-      - ./adapters:/app/adapters:ro
+      - biryar-adapters:/app/adapters
     ports:
       - "${BIRYAR_PORT:-8000}:8000"
     restart: unless-stopped
@@ -90,3 +92,4 @@ services:
 volumes:
   biryar-db:
   biryar-keys:
+  biryar-adapters:

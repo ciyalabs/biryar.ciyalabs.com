@@ -1,6 +1,6 @@
 ---
-title: Keepa
-description: Whether you need a Keepa subscription to use Biryar.
+title: "Keepa"
+description: "Whether you need a Keepa subscription to use Biryar, and how far its tokens go."
 sidebar:
   order: 3
 ---
@@ -10,16 +10,53 @@ sidebar:
 
 **Sourcing needs a Keepa key. Nothing else does.**
 
-A scan reads a retailer's shelves and finds barcodes; every one of them is
-then looked up on Amazon, and that lookup goes through Keepa, which carries
-price, rank and offer history for products you do not sell yet. The
-Portfolio and the repricer read your own account through your own Amazon
-application and never touch Keepa.
+A scan reads a retailer's shelves and finds barcodes. Every one of them is
+then looked up on Amazon, and that lookup goes through
+[Keepa](https://keepa.com/), which knows the price, the sales rank and the
+offers of products you do not sell yet. The Portfolio and the repricer
+read your own account through your own Amazon application and never touch
+Keepa.
 
 So: install Biryar, connect Amazon, and look at your figures without a
-Keepa subscription. Add a key under **Settings, Connections** the day you
-want to scan a shop. The subscription is yours, and the tokens a scan
-spends are yours; Biryar does not resell them. The cheapest Keepa plan with
-API access is enough for a few scans a day; the retailer lines on the
-Sourcing page say when a scan stopped because the tokens ran out, and the
-next scan carries on from there once they have refilled.
+Keepa subscription. Add a key the day you want to scan a shop.
+
+## Adding the key
+
+The key comes with Keepa's API access, which is a paid plan of its own.
+The smallest one is enough for a few scans a day. Copy the key from your
+Keepa account, then in Biryar open **Settings, Connections** and paste it
+beside **Keepa**, under **Keys for other services**. It is locked away on
+your computer and never shown again.
+
+The subscription is yours, and the tokens a scan spends are yours. Biryar
+does not resell them.
+
+## Tokens, and how far they go
+
+Keepa counts in tokens. **Looking up one product spends one token**, and
+your Keepa plan gives back a fixed number of tokens every minute. Twenty
+tokens a minute, for example, is 28,800 a day.
+
+You do not have to work that out. Biryar reads your plan's rate from Keepa
+itself, and under **Settings, Sourcing** the note **What this schedule
+costs** shows three things:
+
+- how many tokens a day your scheduled scans spend,
+- how many your Keepa plan refills in a day,
+- what share of the plan that is.
+
+It updates while you change the schedule, before you save, and when the
+schedule asks for more than the plan gives it suggests a number of passes
+a day that fits.
+
+The daily total is not the whole picture. Tokens come back at a steady
+rate, so several shops scanned at the same moment can empty the balance
+for a while even when the day as a whole is well within the plan. That is
+harmless: the scan stops, says that the Keepa token balance ran out, and
+the next one carries on from the same place once the tokens have refilled.
+
+## Opening a product on Keepa
+
+Every deal has a **Keepa** link beside its Shop and Amazon links. It opens
+the product's own Keepa page, with the history of its price and sales
+rank, which is worth a look before you buy. That link needs no key.

@@ -16,11 +16,40 @@ package is older than it — install Node from NodeSource or nvm, not apt.
 
 ```
 src/content/docs/     the documentation, one Markdown file per page
-src/styles/           the Biryar accent colour
+src/diagrams/         drawings used by this site's own pages
+src/components/       Diagram.astro, which places a drawing in a page
+src/styles/           the Biryar accent colour, and the drawings' colours
+scripts/sync-docs.mjs pulls the guides from the product repository
 public/reports/       the six technical reports, served as published
 public/CNAME          the custom domain
 astro.config.mjs      sidebar, title, social links
 ```
+
+## Where a page comes from
+
+Most guides are written in the product repository (`docs/` in
+ciyalabs/biryar) and copied here by `node scripts/sync-docs.mjs ../biryar`.
+Those files say so at the top; edit them there, not here. The pages that
+belong to this site alone are the home page, Get Biryar, Support, Words
+used here, Reports and BiryarBot.
+
+Push the product repository first. The deploy here checks its copies
+against the product repository on GitHub and stops if they differ.
+
+## Drawings
+
+Every drawing is an SVG placed inline in its page, so that it follows the
+light and dark switch. A drawing is written against class names
+(`d-ink`, `d-box`, `d-blue` and so on) whose colours are set once per
+theme in `src/styles/biryar.css`; it never names a colour itself. Each
+file also carries a small style block of its own, used only when the file
+is opened by itself.
+
+- In a guide from the product repository, write
+  `![what it shows](img/name.svg "Caption")`. The sync puts the drawing
+  into the page.
+- In a page of this site, `<Diagram name="name" caption="..." />` does the
+  same for a file in `src/diagrams/`.
 
 The reports are standalone HTML with their own styling and citation widget.
 They are served from `public/` untouched rather than ported into Markdown, so

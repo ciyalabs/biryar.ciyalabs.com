@@ -27,22 +27,32 @@ export default defineConfig({
           { label: 'What Biryar is', link: '/' },
           { label: 'Get Biryar', slug: 'get' },
           { label: 'Free and Pro', slug: 'plans' },
+          { label: 'Words used here', slug: 'words' },
           { label: 'Support', slug: 'support' },
         ]},
         { label: 'Setting up', items: [
           { label: 'Install', slug: 'setup/install' },
-          { label: 'Getting your SP-API keys', slug: 'setup/sp-api' },
+          { label: 'Connecting Amazon', slug: 'setup/sp-api' },
           { label: 'Keepa', slug: 'setup/keepa' },
+          { label: 'ScraperAPI', slug: 'setup/scraperapi' },
           { label: 'Getting back in', slug: 'setup/getting-back-in' },
         ]},
         { label: 'Using it', items: [
+          { label: 'Sourcing', slug: 'guide/sourcing' },
           { label: 'Repricing', slug: 'guide/repricing' },
-          { label: 'Adding a retailer', slug: 'guide/adapters' },
+          { label: 'Portfolio', slug: 'guide/portfolio' },
         ]},
         { label: 'How it works', items: [
           { label: 'How the fees are measured', slug: 'methodology/fees' },
-          { label: 'How tenants are kept apart', slug: 'architecture/tenancy' },
-          { label: 'BiryarBot', slug: 'bot' },
+          { label: 'Where your data lives', slug: 'methodology/your-data' },
+          { label: 'BiryarBot, for shop owners', slug: 'bot' },
+        ]},
+        // The two pages here expect a reader who writes code. They sit in a
+        // group that says so, so a seller does not open one, meet SQL, and
+        // conclude the whole product is written for somebody else.
+        { label: 'For developers', collapsed: true, items: [
+          { label: 'Adding a retailer', slug: 'guide/adapters' },
+          { label: 'How businesses are kept apart', slug: 'architecture/tenancy' },
         ]},
         { label: 'Reports', items: [
           { label: 'All reports', slug: 'reports' },

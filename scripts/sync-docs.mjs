@@ -57,17 +57,24 @@ const PAGES = [
   {
     from: "docs/setup/sp-api.md",
     to: "setup/sp-api.md",
-    title: "Getting your SP-API keys",
+    title: "Connecting Amazon",
     description:
-      "Registering your own Amazon application and authorising it against your own seller account.",
+      "Giving Biryar permission to read your own seller account, step by step with screenshots.",
     order: 2,
   },
   {
     from: "docs/setup/keepa.md",
     to: "setup/keepa.md",
     title: "Keepa",
-    description: "Whether you need a Keepa subscription to use Biryar.",
+    description: "Whether you need a Keepa subscription to use Biryar, and how far its tokens go.",
     order: 3,
+  },
+  {
+    from: "docs/setup/scraperapi.md",
+    to: "setup/scraperapi.md",
+    title: "ScraperAPI",
+    description: "Which shops need a ScraperAPI key, which do not, and what happens when its credits run out.",
+    order: 4,
   },
   {
     from: "docs/setup/getting-back-in.md",
@@ -75,7 +82,7 @@ const PAGES = [
     title: "Getting back in",
     description:
       "How to get back into Biryar after a forgotten password, a forgotten username or a lost phone, step by step.",
-    order: 4,
+    order: 5,
   },
   {
     from: "docs/methodology/fees.md",
@@ -84,17 +91,36 @@ const PAGES = [
     description: "Why the real Amazon cut is not the one on the fee schedule.",
   },
   {
+    from: "docs/your-data.md",
+    to: "methodology/your-data.md",
+    title: "Where your data lives",
+    description: "What Biryar stores, where, who it talks to, and what never leaves your computer.",
+  },
+  {
     from: "docs/architecture/tenancy.md",
     to: "architecture/tenancy.md",
-    title: "How tenants are kept apart",
+    title: "How businesses are kept apart",
     description:
-      "Why isolation is enforced by the database rather than by remembering to filter.",
+      "For developers: why one business's records are kept from another's by the database itself.",
   },
   {
     from: "docs/plans.md",
     to: "plans.md",
     title: "Free and Pro",
     description: "What the free plan includes, what Pro adds, and how a licence works.",
+  },
+  {
+    from: "docs/sourcing.md",
+    to: "guide/sourcing.md",
+    title: "Sourcing",
+    description:
+      "How a scan reads a shop and finds deals, how shops are kept running by themselves, and what each message means.",
+  },
+  {
+    from: "docs/portfolio.md",
+    to: "guide/portfolio.md",
+    title: "Portfolio",
+    description: "What each product cost, what it sold for, what Amazon kept, and what was left.",
   },
   {
     from: "docs/repricing.md",
@@ -107,7 +133,7 @@ const PAGES = [
     from: "docs/adapters.md",
     to: "guide/adapters.md",
     title: "Adding a retailer",
-    description: "Writing an adapter for a shop Biryar does not ship with.",
+    description: "Writing the small piece of code that reads a shop Biryar does not ship with.",
   },
 ];
 
@@ -224,18 +250,74 @@ function rewriteLinks(body, from) {
  * Rewrite image references and say which files have to be copied.
  *
  * Markdown images only: a link to an image is a link and is handled by
- * rewriteLinks, which sends anything that is not a page to GitHub.
+ * rewriteLinks. A drawing (an .svg) is not copied: it goes into the page
+ * itself, see figure() below.
  */
-function rewriteImages(body, from, wanted) {
-  return body.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (whole, alt, target) => {
-    if (/^(https?:)?\/\//.test(target) || target.startsWith("/")) return whole;
-    const resolved = join(dirname(from), target).replaceAll("\\", "/");
+const IMAGE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g;
+
+function elsewhere(target) {
+  return /^(https?:)?\/\//.test(target) || target.startsWith("/");
+}
+
+function escapeHtml(text) {
+  return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
+/**
+ * A drawing, as the HTML that goes into the page.
+ *
+ * A drawing is placed inline rather than linked as an image. An <img>
+ * cannot see the page's theme, so it would stay dark on a light page, or
+ * follow the system setting while the reader had chosen the other with the
+ * switch. Inline, it is styled by the roles in src/styles/biryar.css and
+ * follows the switch.
+ *
+ * Two things are removed on the way in. The file's own <style> is there so
+ * the file reads properly when opened by itself, in the repository; in the
+ * page the stylesheet says what the roles are. And blank lines go, because
+ * markdown ends a block of HTML at the first one, and the rest of the
+ * drawing would be printed as text.
+ */
+function figure(svg, caption) {
+  const drawing = svg
+    .replace(/<\?xml[^>]*\?>/, "")
+    .replace(/<style[\s\S]*?<\/style>/g, "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n");
+  const narrow = /<svg[^>]*data-narrow/.test(drawing) ? " narrow" : "";
+  return (
+    `<figure class="diagram not-content${narrow}">\n` +
+    drawing +
+    "\n" +
+    (caption ? `<figcaption>${escapeHtml(caption)}</figcaption>\n` : "") +
+    "</figure>"
+  );
+}
+
+async function rewriteImages(body, from, wanted, source) {
+  const where = (target) => join(dirname(from), target).replaceAll("\\", "/");
+
+  // Drawings first, because reading one is the only part that waits.
+  const drawings = new Map();
+  for (const [, , target] of body.matchAll(IMAGE)) {
+    if (elsewhere(target) || !target.endsWith(".svg")) continue;
+    const resolved = where(target);
+    if (!drawings.has(resolved)) drawings.set(resolved, await read(source, resolved));
+  }
+
+  return body.replace(IMAGE, (whole, alt, target, caption) => {
+    if (elsewhere(target)) return whole;
+    const resolved = where(target);
+    const svg = drawings.get(resolved);
+    if (svg) return figure(svg, caption);
     wanted.add(resolved);
     return `![${alt}](${assetUrl(resolved)})`;
   });
 }
 
-function render(page, markdown, wanted) {
+async function render(page, markdown, wanted, source) {
   // A source document may carry its own front matter. Left in place it is
   // not read as front matter here — this file gets its own, above — so it
   // renders as a horizontal rule and a stray "title:" line in the middle of
@@ -249,15 +331,17 @@ function render(page, markdown, wanted) {
   const sidebar = page.order ? `sidebar:\n  order: ${page.order}\n` : "";
   return (
     "---\n" +
-    `title: ${page.title}\n` +
-    `description: ${page.description}\n` +
+    // Quoted, the way JSON quotes: a description with a colon in it is
+    // otherwise read as a mapping, and the build stops on the page.
+    `title: ${JSON.stringify(page.title)}\n` +
+    `description: ${JSON.stringify(page.description)}\n` +
     sidebar +
     "---\n\n" +
     // An HTML comment, not `{/* */}`: these are .md pages, where MDX
     // expressions are not parsed and would render as visible text.
     "<!-- Generated by scripts/sync-docs.mjs from ciyalabs/biryar.\n" +
     "     Edit the document in that repository, not this file. -->\n\n" +
-    rewriteImages(rewriteLinks(body, page.from), page.from, wanted).trimEnd() +
+    (await rewriteImages(rewriteLinks(body, page.from), page.from, wanted, source)).trimEnd() +
     "\n"
   );
 }
@@ -269,7 +353,7 @@ const source = args.find((a) => !a.startsWith("--"));
 let stale = [];
 const wanted = new Set();
 for (const page of PAGES) {
-  const rendered = render(page, await read(source, page.from), wanted);
+  const rendered = await render(page, await read(source, page.from), wanted, source);
   const path = join(OUT, page.to);
 
   const current = await readFile(path, "utf8").catch(() => null);

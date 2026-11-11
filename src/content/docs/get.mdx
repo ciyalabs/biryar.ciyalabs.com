@@ -1,15 +1,34 @@
 ---
 title: Get Biryar
-description: Install Biryar on your own machine in four commands, try Pro free for fourteen days, and buy a licence when it has earned it.
+description: Install Biryar on your own computer with three lines typed once, try Pro free for fourteen days, and buy a licence when it has earned it.
 sidebar:
   order: 0
 ---
 
 import { Card, CardGrid, Steps, TabItem, Tabs } from '@astrojs/starlight/components';
 
-Biryar runs on your own computer. Installing it is downloading one small
-file and starting one container; there is no account to make with us,
-and nothing you enter ever reaches a server of ours.
+Biryar runs on your own computer, and you use it in your web browser.
+Installing it is three lines typed once. There is no account to make with
+us, and nothing you enter ever reaches a server of ours.
+
+<div class="path not-content">
+  <div>
+    <strong>Install Docker</strong>
+    <span>A free program that runs Biryar in a sealed box.</span>
+  </div>
+  <div>
+    <strong>Paste three lines</strong>
+    <span>They download one small file and start Biryar.</span>
+  </div>
+  <div>
+    <strong>Sign up</strong>
+    <span>In your browser, with the setup code Biryar printed.</span>
+  </div>
+  <div>
+    <strong>Save your sealing key</strong>
+    <span>One line of text, kept somewhere safe.</span>
+  </div>
+</div>
 
 ## What you need
 
@@ -27,7 +46,8 @@ Docker Desktop on Windows and Mac, Docker Engine on Linux.
 <Tabs syncKey="os">
   <TabItem label="Linux and Mac">
 
-  In a terminal:
+  In a terminal (on a Mac, press Command and Space, type `Terminal`,
+  press Enter):
 
   ```bash
   mkdir biryar && cd biryar
@@ -38,8 +58,9 @@ Docker Desktop on Windows and Mac, Docker Engine on Linux.
   </TabItem>
   <TabItem label="Windows">
 
-  In PowerShell, with Docker Desktop running. It is `curl.exe`, not `curl`:
-  PowerShell's own `curl` is a different command.
+  In PowerShell (press the Windows key, type `PowerShell`, press Enter),
+  with Docker Desktop running. It is `curl.exe`, not `curl`: PowerShell's
+  own `curl` is a different command.
 
   ```powershell
   mkdir biryar; cd biryar
@@ -51,9 +72,9 @@ Docker Desktop on Windows and Mac, Docker Engine on Linux.
 </Tabs>
 
 Or save [docker-compose.yml](/get/docker-compose.yml) by hand and run the
-last line in its folder. The first start takes a minute: it pulls the
-image, prepares the database, and makes the key that seals your Amazon
-credentials.
+last line in its folder. The first start takes a minute: Biryar is
+downloaded, its database is set up, and the key that locks your Amazon
+keys is made.
 
 <Steps>
 
@@ -86,11 +107,12 @@ credentials.
 
 </Steps>
 
-Everything else happens in the product: connecting Amazon, adding a Keepa
-key, inviting the people you work with. Nothing is typed into a file. The
-[install guide](/setup/install/) has the details, and the optional settings
-(the port, a pinned version) are in [env.example](/get/env.example).
-Updating later is `docker compose pull && docker compose up -d`.
+Everything else happens inside Biryar, on its own screens:
+[connecting Amazon](/setup/sp-api/), adding a [Keepa](/setup/keepa/) or
+[ScraperAPI](/setup/scraperapi/) key, inviting the people you work with.
+Nothing more is typed into a terminal or a file. The
+[install guide](/setup/install/) has the details, including backing up
+and updating, which is `docker compose pull && docker compose up -d`.
 
 ## What you get
 
@@ -98,13 +120,13 @@ Updating later is `docker compose pull && docker compose up -d`.
   <Card title="Free" icon="open-book">
     Everything Biryar sees. The whole Portfolio with measured fees and
     invoice reading, every retailer in Sourcing, and every repricing
-    decision explained and checked with Amazon, as a preview. A free scan
-    covers up to three retailers, twice a day, and shows its best hundred
-    results.
+    decision explained and checked with Amazon, as a preview. You can
+    start two scans a day, of up to three retailers each, and a scan shows
+    its best hundred results.
   </Card>
   <Card title="Pro" icon="rocket">
     Everything Biryar does. Prices sent to Amazon on the schedule you set,
-    retailers and repricing kept running by themselves, no scan limits,
+    retailers scanned by themselves up to 48 times a day, no scan limits,
     and retailers you add yourself.
   </Card>
 </CardGrid>

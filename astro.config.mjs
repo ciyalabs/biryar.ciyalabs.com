@@ -1,6 +1,21 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { GOATCOUNTER } from './src/data/site.mjs';
+
+// The visitor counter, when one is switched on in src/data/site.mjs. It
+// sets no cookie and is the only thing on the site that talks to anyone
+// but the site's own host; the privacy page says so, from the same value.
+const counter = GOATCOUNTER
+  ? [{
+      tag: 'script',
+      attrs: {
+        'data-goatcounter': `https://${GOATCOUNTER}.goatcounter.com/count`,
+        async: true,
+        src: 'https://gc.zgo.at/count.js',
+      },
+    }]
+  : [];
 
 export default defineConfig({
   site: 'https://biryar.ciyalabs.com',
@@ -22,6 +37,7 @@ export default defineConfig({
       // and citation widget. They are served from public/reports untouched
       // rather than ported, so the writing stays exactly as it was published.
       customCss: ['./src/styles/biryar.css'],
+      head: counter,
       // The foot of every page says who makes Biryar and links the imprint.
       components: { Footer: './src/components/Footer.astro' },
       // The maker, in the header beside the theme switch.
@@ -37,6 +53,7 @@ export default defineConfig({
           { label: 'What is new', slug: 'whats-new' },
           { label: 'Words used here', slug: 'words' },
           { label: 'Support', slug: 'support' },
+          { label: 'Privacy', slug: 'privacy' },
         ]},
         { label: 'Setting up', items: [
           { label: 'Install', slug: 'setup/install' },

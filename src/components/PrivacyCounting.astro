@@ -1,0 +1,39 @@
+---
+/**
+ * What the privacy notice says about counting visitors: the truth for the
+ * site as it is built. Switched on in src/data/site.mjs, it describes the
+ * counter. Switched off, it says there is none.
+ */
+import { counting } from '../data/site.mjs';
+---
+
+{counting ? (
+  <Fragment>
+    <p>
+      This site counts page views with <a href="https://www.goatcounter.com/">GoatCounter</a>, a
+      small open-source counter, so that we can see which pages are read and which other sites send
+      visitors here. It is the only part of this site that contacts anyone but the site's own host.
+    </p>
+    <p>For each page view it records:</p>
+    <ul>
+      <li>the page that was opened, and the page that linked to it, if any</li>
+      <li>the name of the browser and the operating system, and the size of the screen</li>
+      <li>the country the visit appears to come from</li>
+    </ul>
+    <p>
+      It sets no cookie and stores nothing in your browser. Your IP address is not stored: it is
+      used for a moment, in memory, to tell one visit from another and to work out the country, and
+      is then discarded. The counts cannot be traced back to a person, and they are not combined
+      with anything else we hold.
+    </p>
+    <p>
+      The legal basis is Art. 6(1)(f) GDPR. Our legitimate interest is knowing, in numbers only,
+      whether this site is found and read.
+    </p>
+  </Fragment>
+) : (
+  <p>
+    This site does not count its visitors. It uses no analytics or tracking tools and no
+    advertising services.
+  </p>
+)}

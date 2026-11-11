@@ -1,0 +1,94 @@
+---
+/**
+ * How a licence is bought: the pay buttons when they are switched on, the
+ * email route when they are not, and the email route beside the buttons
+ * for anyone who wants an invoice first.
+ *
+ * Both are written here, so the page never promises a button that is not
+ * there. Which one shows is decided by src/data/site.mjs.
+ */
+import { BUY, buying } from '../data/site.mjs';
+
+const subject = encodeURIComponent('Biryar Pro licence');
+const body = encodeURIComponent(
+  [
+    'Business name (as it should appear on the invoice):',
+    'Invoice address:',
+    'A month or a year:',
+    'Where did you hear of Biryar (optional):',
+    '',
+  ].join('\n'),
+);
+const mail = `mailto:info@ciyalabs.com?subject=${subject}&body=${body}`;
+---
+
+{buying ? (
+  <div class="buy not-content">
+    <div class="buy-buttons">
+      {BUY.month && (
+        <a class="buy-button" href={BUY.month}>
+          <strong>One month</strong>
+          <span>€29</span>
+        </a>
+      )}
+      {BUY.year && (
+        <a class="buy-button primary" href={BUY.year}>
+          <strong>One year</strong>
+          <span>€290, the price of ten months</span>
+        </a>
+      )}
+    </div>
+    <p>
+      The payment page is run by Stripe: card or direct debit. It asks for your business name and
+      address, which go on the invoice.
+    </p>
+    <p>
+      <strong>What happens next.</strong> The licence and the invoice arrive by email, at the latest
+      on the next working day, and the term starts the day the licence is sent. These are single
+      payments: nothing renews by itself, and there is nothing to cancel.
+    </p>
+    <p>
+      <strong>Prefer an invoice and a bank transfer?</strong> Write to{' '}
+      <a href={mail}>info@ciyalabs.com</a> with the name of your business as it should appear on
+      the invoice, the invoice address, and whether you want a month or a year. You get an invoice
+      payable within 14 days, and the licence goes out as soon as the payment arrives.
+    </p>
+  </div>
+) : (
+  <div class="buy not-content">
+    <p>
+      <strong>How it goes.</strong> Write to <a href={mail}>info@ciyalabs.com</a> with three things:
+      the name of your business as it should appear on the invoice, the invoice address, and whether
+      you want a month or a year. You get an invoice by email, payable by bank transfer within 14
+      days. The licence goes out by email as soon as the payment arrives, and the term starts that
+      day.
+    </p>
+  </div>
+)}
+
+<style>
+  .buy { margin: 1rem 0; }
+  .buy p { margin: 0 0 0.85rem; }
+  .buy-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .buy-button {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.6rem;
+    border: 1px solid var(--sl-color-gray-5);
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+    text-decoration: none;
+  }
+  :global([data-theme='light']) .buy-button { background: var(--sl-color-gray-7); }
+  .buy-button strong { font-size: var(--sl-text-lg); }
+  .buy-button span { color: var(--sl-color-gray-2); font-size: var(--sl-text-sm); }
+  .buy-button:hover { border-color: var(--sl-color-accent); }
+  .buy-button.primary { background: var(--sl-color-accent); border-color: var(--sl-color-accent); color: #fff; }
+  .buy-button.primary span { color: rgba(255, 255, 255, 0.85); }
+</style>

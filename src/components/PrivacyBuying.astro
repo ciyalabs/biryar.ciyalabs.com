@@ -1,0 +1,40 @@
+---
+/**
+ * What the privacy notice says about buying a licence: by pay button when
+ * that is switched on in src/data/site.mjs, and by email either way.
+ */
+import { buying } from '../data/site.mjs';
+---
+
+{buying && (
+  <Fragment>
+    <p>
+      <strong>By the pay button.</strong> The payment page is not part of this site. It is run by
+      Stripe (Stripe Payments Europe, Limited, Ireland), and what you type there goes to Stripe.
+      We never see your card or bank details.
+    </p>
+    <p>Stripe passes on to us what an invoice and a licence need:</p>
+    <ul>
+      <li>your name, your business name and the invoice address</li>
+      <li>your email address, and your VAT ID if you gave one</li>
+      <li>what you bought, what you paid and when</li>
+      <li>your answer to "where did you hear of Biryar", if you gave one</li>
+    </ul>
+    <p>
+      More about what Stripe itself does with payment data is in{' '}
+      <a href="https://stripe.com/privacy">Stripe's privacy policy</a>.
+    </p>
+  </Fragment>
+)}
+
+<p>
+  <strong>By email.</strong> If you write to us to buy a licence, we use what you send (your
+  business name, the invoice address, your email address) to write the invoice and to send the
+  licence.
+</p>
+<p>
+  Either way, we use this data to send your invoice and your licence, to tell you before a licence
+  ends, and to answer you. We keep invoices for as long as German tax law requires, and delete the
+  rest when it is no longer needed. The legal basis is Art. 6(1)(b) GDPR, the contract with you,
+  and Art. 6(1)(c) GDPR, our duty to keep accounts.
+</p>

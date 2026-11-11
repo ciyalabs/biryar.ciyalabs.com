@@ -40,6 +40,21 @@ until this site has caught up and the check is run again. The deploy here
 checks nothing against the product repository, which is private and
 cannot be read from this one.
 
+## Pay buttons and the visitor counter
+
+Both are off until a value is filled in, in `src/data/site.mjs`:
+
+- `BUY.month` and `BUY.year`: the public addresses of the two Stripe
+  payment links. Filled in, Get Biryar shows two pay buttons; empty, it
+  offers the invoice and bank transfer by email.
+- `GOATCOUNTER`: the site's code at GoatCounter. Filled in, every page
+  loads the counter; empty, the site contacts nobody but its own host.
+
+The privacy page reads the same file, so it describes only what is
+switched on. None of these values is a secret. The secret half, the key
+that reads payments, never comes near this repository: it lives with the
+licence desk (`desk/` in the product repository).
+
 ## Drawings
 
 Every drawing is an SVG placed inline in its page, so that it follows the

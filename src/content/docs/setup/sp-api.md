@@ -33,7 +33,7 @@ Connections**:
 |---|---|
 | Client ID | Your application's identifier, under its LWA credentials in Amazon's portal |
 | Client secret | The secret that goes with it |
-| Merchant token | Your seller id, shown when you authorise |
+| Merchant token | Your own seller ID: a capital A and about a dozen letters and digits. In Seller Central it is under **Settings, Account Info, Your Merchant Token** |
 | Refresh token | A long text beginning `Atzr|`, which Amazon shows once when you authorise |
 
 Biryar locks all four away on your computer the moment they are saved and
@@ -168,9 +168,15 @@ open **Connect with a refresh token** and enter the four values:
 - **Client ID** and **Client secret**, from the application's LWA
   credentials in the portal.
 
-Press **Save**. Biryar checks the values with Amazon straight away and
-refuses to store a set that does not work, so you find out now and not
-later.
+Press **Save**. Within a minute Biryar makes its first read, and the
+Amazon card then says **active**. If a value is wrong, the card shows what
+Amazon answered, and the table under "When it goes wrong" says what to do.
+
+**The merchant token is not the marketplace ID.** The two look alike. The
+marketplace ID is the same for every seller on one Amazon site
+(`A1PA6795UKMFR9` is Amazon.de), and it is the one Seller Central shows in
+most places. Your merchant token is yours alone. Biryar refuses a
+marketplace ID in that box and says so.
 
 All four are needed, even though it is the token you were given. A refresh
 token does not open anything by itself. Before every read Biryar swaps it

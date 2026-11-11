@@ -180,13 +180,34 @@ is nothing in the line to change, and it works from any folder.
 [Getting back into Biryar](/setup/getting-back-in/) goes through it step by
 step, including what to do if you have never opened a terminal.
 
-## Installing it as an app
+## Opening it as an app
 
-Biryar is a web page served by your own computer, and it can be installed
-like an app: in Chrome or Edge, **Install Biryar** from the address bar or
-the menu; in Safari on a Mac, **File, Add to Dock**. It then has its own
-icon and opens in its own window. Nothing extra is downloaded, and it
-updates when Biryar does.
+This is optional, and it is not a second installation. Biryar is already
+installed: it is the program running on your computer. Your browser can
+also give it an icon of its own and a window of its own, so it opens like
+an app and not as one tab among your others. Nothing new is downloaded,
+and it is the same Biryar with the same data whichever way you open it.
+
+The easy way is inside Biryar: open **Help**, find **Can I open Biryar as
+an app, with its own icon?**, and press **Open Biryar as an app**. Your
+browser asks you to confirm.
+
+If the button is not there, the browser has to be asked through its own
+menu, and Help shows the steps for the browser you are using:
+
+| Browser | What to do |
+|---|---|
+| Chrome | Open the menu, the three dots at the top right of the window. Choose **Cast, save and share**, then the line that begins with **Install**. |
+| Edge | Open the menu, the three dots at the top right. Choose **Apps**, then the line that begins with **Install**. |
+| Safari on a Mac | Open the **File** menu at the top of the screen and choose **Add to Dock**. |
+| Firefox | Firefox cannot do this. Biryar works the same in a tab, and a bookmark gets you back to it. |
+
+Browsers offer this only for an address that begins with `localhost` or
+`https`. If you open Biryar from another computer on your network, a
+bookmark does the same job.
+
+If Biryar is already open in a window with no tabs and no address bar,
+you are using the app already.
 
 ## Updating
 

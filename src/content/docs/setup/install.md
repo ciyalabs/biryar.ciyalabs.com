@@ -73,6 +73,21 @@ the rules that keep one business's data from another's, so Biryar never
 runs as the owner. If the update ever fails, it changes nothing, and
 `docker compose logs api` says why.
 
+### After the machine restarts
+
+You run those lines once. After a restart Biryar comes back by itself, at
+the same address, as soon as Docker is running:
+
+- **Linux**: Docker starts with the machine, and Biryar with it.
+- **Windows and Mac**: Biryar starts when Docker Desktop does. To have that
+  happen without opening it, switch on "Start Docker Desktop when you sign
+  in" in Docker Desktop's settings, under General.
+
+Give it a moment after switching on. Biryar waits for its database to
+start before it answers, usually a few seconds. If the page still does not
+open, `docker compose ps` in the `biryar` folder shows what is running, and
+`docker compose up -d` there starts anything that is not.
+
 ## Your sealing key
 
 On its first start Biryar makes the key that seals every Amazon credential

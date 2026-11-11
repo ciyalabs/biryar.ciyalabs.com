@@ -153,17 +153,21 @@ open, `docker compose ps` in the `biryar` folder shows what is running, and
 
 Open <http://localhost:8000> and choose **Sign up**. The first person to
 sign up becomes the owner, and the page asks for this install's **setup
-code**. Biryar printed it when it started. This shows it again:
+code**. To see it, paste this line into a terminal and press Enter. It is
+the same on Windows, Mac and Linux, it works from any folder, and there is
+nothing in it to change:
 
-```bash
-docker compose logs api | grep -A 3 "setup code"
+```
+docker exec biryar-api-1 python -m biryar.init --setup-code
 ```
 
-On Windows, in PowerShell:
+It answers with one line, `Setup code:` followed by the code. Type that
+code into the sign-up page.
 
-```powershell
-docker compose logs api | Select-String "setup code" -Context 0,3
-```
+The line begins with `docker exec biryar-api-1` because Biryar runs inside
+Docker, and that part sends the rest to it. Without it, your computer
+looks for Biryar among its own programs and answers "No module named
+'biryar'".
 
 The setup code is what makes the sign-up page safe. Without it, whoever
 reached the page first would become the owner. With it, the owner is
@@ -325,12 +329,6 @@ answers at <http://localhost:8001>.
 
 These are for someone comfortable in a terminal. Most installs never need
 them.
-
-**Print the setup code on request:**
-
-```bash
-docker compose run --rm api python -m biryar.init --setup-code
-```
 
 **Make the owner without the sign-up page.** This prints a generated
 password, shown once:

@@ -141,24 +141,16 @@ keys is made.
 <Steps>
 
 1. Open [localhost:8000](http://localhost:8000) and choose **Sign up**. The page asks for
-   the install's setup code, which the server printed when it started:
+   the install's setup code. To see it, paste this line into the same
+   terminal and press Enter. It is the same on every system, and there is
+   nothing in it to change:
 
-   <Tabs syncKey="os">
-     <TabItem label="Linux and Mac">
+   ```
+   docker exec biryar-api-1 python -m biryar.init --setup-code
+   ```
 
-     ```bash
-     docker compose logs api | grep -A 3 "setup code"
-     ```
-
-     </TabItem>
-     <TabItem label="Windows">
-
-     ```powershell
-     docker compose logs api | Select-String "setup code" -Context 0,3
-     ```
-
-     </TabItem>
-   </Tabs>
+   It answers `Setup code:` followed by the code. Type that code into the
+   sign-up page, then choose a username and a password.
 
 2. Back up the sealing key somewhere that is not this machine. Biryar made
    it for you on the first start; this prints it, on every system:

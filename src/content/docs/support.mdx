@@ -40,6 +40,17 @@ docker --version
 Once that prints a version number, go back to your `biryar` folder and
 run `docker compose up -d` again.
 
+### Windows says it cannot find `dockerDesktopLinuxEngine`
+
+The message ends "open //./pipe/dockerDesktopLinuxEngine: The system
+cannot find the file specified", and usually begins by asking whether the
+Docker daemon is running. Docker is installed, and it is not running yet.
+
+Open **Docker Desktop** from the Start menu, wait until it says its
+engine is running, and run the same line again. To have it start with
+Windows, switch on "Start Docker Desktop when you sign in" in its
+settings, under General.
+
 ### Docker Desktop will not install, or will not start
 
 Docker Desktop is made by Docker, not by us, and it has requirements of
@@ -82,15 +93,25 @@ again. The interface then answers at that port.
 
 ### The sign-up page asks for a setup code
 
-It is printed by the server when it starts with nobody signed up:
+Paste this line into a terminal on the computer Biryar runs on
+(PowerShell on Windows) and press Enter. It works from any folder:
 
-```bash
-docker compose logs api | grep -A 3 "setup code"
 ```
+docker exec biryar-api-1 python -m biryar.init --setup-code
+```
+
+It answers `Setup code:` followed by the code.
 
 The first person to sign up becomes the owner, and the code is what keeps
 that from being whoever finds the page first. The [install
 guide](/setup/install/#your-account) explains the reasoning.
+
+### "No module named 'biryar'"
+
+You typed `python -m biryar.init --setup-code` by itself, as an older
+version of the sign-up page said to. Biryar runs inside Docker, so the
+line has to be sent there. Put `docker exec biryar-api-1` in front of it,
+as in the answer above.
 
 ### I forgot my password or my username, or lost my phone
 

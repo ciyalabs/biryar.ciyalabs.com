@@ -128,14 +128,33 @@ covered, then lets you choose a new password or set up a new phone.
 [Getting back in](/setup/getting-back-in/) goes through it step by step,
 including how to open a terminal and how to do it without one.
 
-### Updating
+### How do I update, and how do I know there is something to update to?
 
-```bash
-docker compose pull && docker compose up -d
+In the `biryar` folder, two lines, one after the other:
+
+```
+docker compose pull
+docker compose up -d
 ```
 
-The database is updated as Biryar starts. An update that fails changes
-nothing and stops with the reason in `docker compose logs api`.
+Your data is not touched. The database is brought up to date as Biryar
+starts, and an update that fails changes nothing and stops with the
+reason in `docker compose logs api`.
+
+[What is new](/whats-new/) lists every release and what changed in it.
+Biryar does not check for updates by itself, because it contacts nobody
+but Amazon, Keepa and your shops.
+
+### Which version am I running?
+
+Open **Help** in Biryar and look under **About Biryar**. Releases before
+0.1.2 do not show a number there; if yours shows none, it is older than
+0.1.2.
+
+### A screen in Biryar does not look like this site describes
+
+Then your Biryar is older than the site. The site always describes the
+newest release. Update with the two lines above.
 
 ### Biryar does not open after the computer was restarted
 
@@ -324,8 +343,8 @@ with the licence itself.
 ### Biryar says to update
 
 The licence was signed with a key this version of Biryar does not know
-yet. `docker compose pull && docker compose up -d` brings the version that
-does.
+yet. Update Biryar, with `docker compose pull` and then
+`docker compose up -d`, to get the version that does.
 
 ### The licence ended
 
@@ -338,11 +357,11 @@ picks up exactly where the old one left off. See [Free and Pro](/plans/).
 [info@ciyalabs.com](mailto:info@ciyalabs.com?subject=Biryar%20support). We
 answer within two working days.
 
-It helps to say which version you run and what Biryar printed around the
-time of the problem. Both come from the `biryar` folder:
+It helps to say which version you run, which Help shows under About
+Biryar, and what Biryar printed around the time of the problem. That
+comes from the `biryar` folder:
 
-```bash
-docker compose images api
+```
 docker compose logs api
 docker compose logs worker
 ```

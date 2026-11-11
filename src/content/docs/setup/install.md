@@ -271,14 +271,21 @@ you are using the app already.
 
 ## Updating
 
-In the `biryar` folder:
+In the `biryar` folder, type these two lines, one after the other:
 
-```bash
-docker compose pull && docker compose up -d
+```
+docker compose pull
+docker compose up -d
 ```
 
-Biryar brings its database up to date as it starts. An update that fails
-changes nothing, and `docker compose logs api` says why.
+The first downloads the newest release, the second restarts Biryar on it.
+Your data is not touched: Biryar brings its database up to date as it
+starts, and an update that fails changes nothing and says why in
+`docker compose logs api`.
+
+[What is new](/whats-new/) lists every release and what changed in
+it, and says how to see which version you have. Biryar does not check for
+updates by itself.
 
 ## Backing up
 

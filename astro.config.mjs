@@ -27,6 +27,7 @@ export default defineConfig({
           { label: 'What Biryar is', link: '/' },
           { label: 'Get Biryar', slug: 'get' },
           { label: 'Free and Pro', slug: 'plans' },
+          { label: 'What is new', slug: 'whats-new' },
           { label: 'Words used here', slug: 'words' },
           { label: 'Support', slug: 'support' },
         ]},

@@ -11,9 +11,10 @@
 # one changes the port and the other settings in
 # https://biryar.ciyalabs.com/get/env.example.
 #
-# Updating Biryar is the same command with a pull in front:
+# Updating Biryar is a pull, then the same command again:
 #
-#     docker compose pull && docker compose up -d
+#     docker compose pull
+#     docker compose up -d
 #
 # Each start gets the database ready by itself: the tables this version
 # needs are created or updated, and the restricted database account the

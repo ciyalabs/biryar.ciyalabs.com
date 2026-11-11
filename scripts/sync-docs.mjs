@@ -123,6 +123,12 @@ const PAGES = [
     description: "What each product cost, what it sold for, what Amazon kept, and what was left.",
   },
   {
+    from: "docs/whats-new.md",
+    to: "whats-new.md",
+    title: "What is new",
+    description: "Every release of Biryar in plain words, how to update, and how to see which version you have.",
+  },
+  {
     from: "docs/repricing.md",
     to: "guide/repricing.md",
     title: "Repricing",

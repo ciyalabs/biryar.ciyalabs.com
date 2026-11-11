@@ -31,8 +31,8 @@ nothing and says why.
 
 Open **Help** in Biryar and look under **About Biryar**. It says "This is
 version" followed by the number. Compare it with the first heading below.
-Releases before 0.1.2 do not show their number; if yours shows none, it
-is older than 0.1.2.
+Releases before 0.1.3 do not show their number; if yours shows none, it
+is older than 0.1.3.
 
 ## How do I know there is a new one?
 
@@ -40,6 +40,11 @@ By looking at this page. Biryar does not check for updates by itself,
 because it contacts nobody but Amazon, Keepa and your shops, and that
 includes us. If you bought a licence, we also write to you when a release
 matters to you.
+
+## 0.1.3, 11 November 2026
+
+- **Help shows which version you run**, under About Biryar, with a link
+  to this page. Earlier releases did not know their own number.
 
 ## 0.1.2, 11 November 2026
 
@@ -95,8 +100,7 @@ Installing and signing in:
 - **Connecting Amazon**: the form says where each of the four values is
   found, links to the guide, and refuses a marketplace ID typed in place
   of your merchant token.
-- **Help** shows which version you run, and has a button to open Biryar
-  as an app with its own icon.
+- **Help** has a button to open Biryar as an app with its own icon.
 
 ## 0.1.1, 10 November 2026
 

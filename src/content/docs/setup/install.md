@@ -35,12 +35,42 @@ MB of memory while running, two processor cores. **No graphics card**, no
 second machine, no account with us. An internet connection, because it
 reads Amazon and your retailers.
 
-**Docker.** This is the one thing to install first. Docker is a free
-program that runs other programs in a sealed box, so that Biryar brings
-everything it needs and leaves the rest of your computer alone. Install
-[Docker Desktop](https://docs.docker.com/get-docker/) on Windows and Mac,
-or Docker Engine on Linux. On Linux, if `docker ps` answers "permission
-denied", add yourself to the `docker` group and sign in again.
+## Install Docker first
+
+Docker is a free program that runs other programs in a sealed box, so
+that Biryar brings everything it needs and leaves the rest of your
+computer alone. It is a separate program, and it has to be installed and
+running before Biryar can start.
+
+**Windows:**
+
+1. Download [Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+   and run the installer. Leave **Use WSL 2 instead of Hyper-V** ticked.
+2. If Windows asks to restart, restart.
+3. Open **Docker Desktop** from the Start menu. It does not start by
+   itself the first time. Accept its terms; it is free for a business with
+   fewer than 250 people. You can skip making a Docker account.
+4. Wait until Docker Desktop says its engine is running.
+
+**Mac:** download [Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/),
+open the file, drag Docker into Applications, and start it.
+
+**Linux:** install [Docker Engine](https://docs.docker.com/engine/install/)
+for your distribution; it includes the `compose` part Biryar uses. If
+`docker ps` answers "permission denied", add yourself to the `docker`
+group and sign in again.
+
+**Check that it worked.** Open a new terminal window (the next section
+says how) and type:
+
+```bash
+docker --version
+```
+
+A version number means Docker is ready. If Windows answers that `docker`
+"is not recognized", Docker is not installed yet, or the window was open
+before it was: close it and open a new one. A restart of Windows settles
+it if a new window does not.
 
 ## Run it
 

@@ -38,10 +38,57 @@ rented server. About **1 GB of disk, 300 MB of memory, two processor
 cores**. **No graphics card**, no second machine, no account with us. An
 internet connection, because it reads Amazon and your retailers.
 
-The one thing to install first is [Docker](https://docs.docker.com/get-docker/):
-Docker Desktop on Windows and Mac, Docker Engine on Linux.
+## Step 1: install Docker
 
-## Install
+Docker is a free program that runs Biryar in a sealed box, so Biryar
+brings everything it needs and leaves the rest of your computer alone. It
+has to be installed, and running, before the lines in step 2 can work.
+
+<Tabs syncKey="os">
+  <TabItem label="Linux and Mac">
+
+  **Mac:** download [Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/),
+  open the file, drag Docker into Applications, and start it.
+
+  **Linux:** install [Docker Engine](https://docs.docker.com/engine/install/)
+  for your distribution. It includes the `compose` part Biryar uses.
+
+  To check, open a terminal and type:
+
+  ```bash
+  docker --version
+  ```
+
+  A version number means Docker is ready.
+
+  </TabItem>
+  <TabItem label="Windows">
+
+  1. Download [Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+     and run the installer. Leave **Use WSL 2 instead of Hyper-V** ticked.
+  2. If Windows asks to restart, restart.
+  3. Open **Docker Desktop** from the Start menu. It does not start by
+     itself the first time. Accept its terms; it is free for a business
+     with fewer than 250 people. You can skip making a Docker account.
+  4. Wait until Docker Desktop says its engine is running.
+  5. Open a **new** PowerShell window (press the Windows key, type
+     `PowerShell`, press Enter) and type:
+
+     ```powershell
+     docker --version
+     ```
+
+     A version number means Docker is ready. A window that was open
+     before Docker was installed does not know about it yet, which is why
+     it has to be a new one.
+
+  If PowerShell answers that `docker` "is not recognized", see
+  [Support](/support/#windows-says-docker-is-not-recognized).
+
+  </TabItem>
+</Tabs>
+
+## Step 2: start Biryar
 
 <Tabs syncKey="os">
   <TabItem label="Linux and Mac">
@@ -75,6 +122,8 @@ Or save [docker-compose.yml](/get/docker-compose.yml) by hand and run the
 last line in its folder. The first start takes a minute: Biryar is
 downloaded, its database is set up, and the key that locks your Amazon
 keys is made.
+
+## Step 3: sign up, and save your key
 
 <Steps>
 

@@ -14,12 +14,51 @@ Words you do not know are explained in [Words used here](/words/).
 
 ## Installing
 
-### `docker: command not found`, or Docker refuses to start
+### Windows says `docker` is not recognized
 
-Biryar needs [Docker](https://docs.docker.com/get-docker/) with the
-`compose` plugin, which Docker Desktop and the Linux packages both include.
-On Linux, if `docker ps` says "permission denied", add yourself to the
-`docker` group and sign in again.
+In full, PowerShell prints "The term 'docker' is not recognized as the
+name of a cmdlet, function, script file, or operable program." On a Mac
+or Linux the same thing reads `docker: command not found`.
+
+It means the computer does not know the `docker` command yet. Nothing is
+wrong with Biryar, and the file you downloaded is fine. It is one of
+three things:
+
+- **Docker is not installed.** It is a separate program, and it comes
+  first. [Get Biryar, step 1](/get/#step-1-install-docker) has the steps.
+- **Docker was installed after this window was opened.** Close the
+  PowerShell window and open a new one.
+- **Docker was installed and Windows has not been restarted since.**
+  Restart, then start Docker Desktop from the Start menu.
+
+Then check, in a new PowerShell window:
+
+```powershell
+docker --version
+```
+
+Once that prints a version number, go back to your `biryar` folder and
+run `docker compose up -d` again.
+
+### Docker Desktop will not install, or will not start
+
+Docker Desktop is made by Docker, not by us, and it has requirements of
+its own, listed on [its install page](https://docs.docker.com/desktop/setup/install/windows-install/).
+The usual causes on Windows:
+
+- **Virtualization is switched off.** Docker needs it, and on some
+  laptops it is off in the computer's own setup screen (the BIOS or
+  UEFI). The Task Manager shows it: under **Performance, CPU**, look for
+  "Virtualization: Enabled".
+- **WSL is missing or out of date.** Open PowerShell as administrator,
+  type `wsl --install`, and restart. To bring an older one up to date,
+  `wsl --update`.
+- **Windows is too old.** Docker Desktop needs a current Windows 10 or
+  Windows 11. Run Windows Update first.
+
+If the installer shows a message, the exact wording is what tells these
+apart. On Linux, if `docker ps` says "permission denied", add yourself to
+the `docker` group and sign in again.
 
 ### Where is the sealing key, and do I need to do anything with it?
 

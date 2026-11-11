@@ -188,3 +188,23 @@ figure.diagram figcaption {
 .d-rest { fill: var(--d-line); }
 .d-ring { stroke: var(--d-panel); stroke-width: 2; }
 .d-tag { letter-spacing: 0.08em; font-weight: 600; }
+
+/* Who makes Biryar, at the foot of the landing page. */
+.made-by {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 1.25rem 2rem;
+  align-items: start;
+  margin: 1.25rem 0 2rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.75rem;
+  background: var(--sl-color-gray-6);
+}
+:root[data-theme='light'] .made-by { background: var(--sl-color-gray-7); }
+.made-by-mark { color: var(--sl-color-white); display: inline-flex; padding-top: 0.2rem; }
+.made-by p { margin: 0 0 0.75rem; color: var(--sl-color-gray-2); }
+.made-by p:last-child { margin-bottom: 0; }
+.made-by a { color: var(--sl-color-text-accent); }
+.made-by-links { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-size: var(--sl-text-sm); }
+@media (max-width: 50rem) { .made-by { grid-template-columns: 1fr; } }

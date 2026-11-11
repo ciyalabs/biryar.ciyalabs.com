@@ -1,0 +1,61 @@
+---
+/**
+ * The foot of every page: Starlight's own, and then who makes Biryar.
+ *
+ * The site said nowhere that Biryar is made by Ciya Labs, and it had no
+ * imprint. It sells a licence from Germany, where a commercial site has to
+ * name who is behind it and link to an imprint from every page. The imprint
+ * and the privacy notice are the company's, on ciyalabs.com, and cover this
+ * site too.
+ */
+import Default from '@astrojs/starlight/components/Footer.astro';
+import CiyaLabs from './CiyaLabs.astro';
+---
+
+<Default><slot /></Default>
+
+<div class="maker not-content">
+  <a class="maker-mark" href="https://ciyalabs.com/" aria-label="Ciya Labs, the company that makes Biryar">
+    <span>Made by</span>
+    <CiyaLabs height={18} />
+  </a>
+  <nav class="maker-links" aria-label="About the maker">
+    <a href="https://ciyalabs.com/">ciyalabs.com</a>
+    <a href="mailto:info@ciyalabs.com">info@ciyalabs.com</a>
+    <a href="https://ciyalabs.com/imprint.html">Imprint</a>
+    <a href="https://ciyalabs.com/privacy.html">Privacy</a>
+  </nav>
+</div>
+
+<style>
+  .maker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-3);
+  }
+  .maker-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+  }
+  .maker-mark:hover { color: var(--sl-color-white); }
+  .maker-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+  }
+  .maker-links a {
+    color: var(--sl-color-gray-3);
+    text-decoration: none;
+  }
+  .maker-links a:hover { color: var(--sl-color-white); text-decoration: underline; }
+</style>

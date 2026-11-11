@@ -22,6 +22,13 @@ export default defineConfig({
       // and citation widget. They are served from public/reports untouched
       // rather than ported, so the writing stays exactly as it was published.
       customCss: ['./src/styles/biryar.css'],
+      // The foot of every page says who makes Biryar and links the imprint.
+      components: { Footer: './src/components/Footer.astro' },
+      // The maker, in the header beside the theme switch.
+      social: [
+        { icon: 'external', label: 'Ciya Labs, the company that makes Biryar', href: 'https://ciyalabs.com/' },
+        { icon: 'email', label: 'Write to Ciya Labs', href: 'mailto:info@ciyalabs.com' },
+      ],
       sidebar: [
         { label: 'Start here', items: [
           { label: 'What Biryar is', link: '/' },

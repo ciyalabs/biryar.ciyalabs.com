@@ -57,6 +57,7 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 import Diagram from '../../components/Diagram.astro';
+import CiyaLabs from '../../components/CiyaLabs.astro';
 
 Biryar is a program for people who sell on Amazon. It does the reading and
 the arithmetic for three jobs: finding products worth buying, setting
@@ -164,6 +165,31 @@ decision that is yours to take.
   <div>
     <strong>Run a scan</strong>
     <span>Pick a few shops and watch it work.</span>
+  </div>
+</div>
+
+## Who makes it
+
+<div class="made-by not-content">
+  <a class="made-by-mark" href="https://ciyalabs.com/" aria-label="Ciya Labs">
+    <CiyaLabs height={30} />
+  </a>
+  <div>
+    <p>
+      Biryar is made by <a href="https://ciyalabs.com/">Ciya Labs</a>, an independent research lab in
+      Ludwigsburg, Germany, founded in 2026 by Loghman Samani. Ciya is Kurdish for mountain, and
+      Biryar is Kurdish for decision.
+    </p>
+    <p>
+      It was not built as a product first. It was built to run our own Amazon business, and it
+      still does, every day. What you can install is that system, rebuilt so that any seller can
+      run it on a computer of their own. What Biryar earns pays for the lab's research.
+    </p>
+    <p class="made-by-links">
+      <a href="https://ciyalabs.com/#products">Ciya Labs' products and roadmap</a>
+      <a href="https://ciyalabs.com/#about">About the lab</a>
+      <a href="mailto:info@ciyalabs.com">info@ciyalabs.com</a>
+    </p>
   </div>
 </div>
 

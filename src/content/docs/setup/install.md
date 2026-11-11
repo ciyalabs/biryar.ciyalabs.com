@@ -60,8 +60,34 @@ for your distribution; it includes the `compose` part Biryar uses. If
 `docker ps` answers "permission denied", add yourself to the `docker`
 group and sign in again.
 
-**Check that it worked.** Open a new terminal window (the next section
-says how) and type:
+### Docker's own instructions, for each kind of computer
+
+Docker is made by Docker, not by us, and they change how it is installed
+from time to time. These are their own pages, which are always current.
+**Where a page of theirs and the steps above disagree, theirs is right.**
+
+| Your computer | Docker's page |
+|---|---|
+| Windows 10 or 11 | [Install Docker Desktop on Windows](https://docs.docker.com/desktop/setup/install/windows-install/) |
+| Mac, Intel or Apple chip | [Install Docker Desktop on Mac](https://docs.docker.com/desktop/setup/install/mac-install/) |
+| Ubuntu | [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) |
+| Debian | [Install Docker Engine on Debian](https://docs.docker.com/engine/install/debian/) |
+| Raspberry Pi 4 or 5, 64-bit Raspberry Pi OS | [Install Docker Engine on Debian](https://docs.docker.com/engine/install/debian/). Docker says to follow the Debian page for the 64-bit system, which is the one Biryar needs. |
+| Fedora | [Install Docker Engine on Fedora](https://docs.docker.com/engine/install/fedora/) |
+| Another Linux, or a rented server | [Install Docker Engine](https://docs.docker.com/engine/install/), which lists every system Docker supports |
+| Linux with a desktop, if you prefer a window to a terminal | [Install Docker Desktop on Linux](https://docs.docker.com/desktop/setup/install/linux/) |
+
+Two more of their pages that help when something does not go to plan:
+
+- [After installing on Linux](https://docs.docker.com/engine/install/linux-postinstall/):
+  how to use Docker without typing `sudo`, which is what "permission
+  denied" is asking for.
+- [Troubleshooting Docker Desktop](https://docs.docker.com/desktop/troubleshoot-and-support/troubleshoot/):
+  for when Docker Desktop will not start on Windows or Mac.
+
+### Check that it worked
+
+Open a new terminal window (the next section says how) and type:
 
 ```bash
 docker --version

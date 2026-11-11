@@ -158,22 +158,17 @@ database itself.
 
 There is no reset email: a self-hosted install has no mail server, and
 asking you to configure one for the day you forget a password is a worse
-trade than a command. On the machine Biryar runs on, in a terminal opened
-in the `biryar` folder (the one holding `docker-compose.yml`), with your own
-username or email in place of `your-username`:
+trade than one line typed on the machine Biryar runs on:
 
 ```bash
-docker compose exec api python -m biryar.passwd --login your-username
+docker exec -it biryar-api-1 biryar-password
 ```
 
-prints a new password, shown once (`--ask` prompts for one instead). For a
-lost phone, add `--reset-two-factor`: it forgets the old authenticator,
-signs that person out everywhere, and the next sign-in sets up a new one.
-
-The whole line matters. Biryar lives inside its container, so
-`python -m biryar.passwd` on its own answers "No module named biryar". The
-sign-in page shows the same line with your name already in it, under
-"Forgot your password, or lost your phone?".
+It shows the accounts on that machine, asks which is yours, and lets you
+choose a new password or have one made. It also covers a lost phone. There
+is nothing in the line to replace, and it works from any folder.
+[Getting back into Biryar](/setup/getting-back-in/) goes through it step by
+step, including what to do if you have never opened a terminal.
 
 Passwords last a year; Biryar warns two weeks ahead and asks for a new one
 when it runs out.

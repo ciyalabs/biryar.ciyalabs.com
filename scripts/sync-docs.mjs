@@ -70,6 +70,14 @@ const PAGES = [
     order: 3,
   },
   {
+    from: "docs/setup/getting-back-in.md",
+    to: "setup/getting-back-in.md",
+    title: "Getting back in",
+    description:
+      "How to get back into Biryar after a forgotten password, a forgotten username or a lost phone, step by step.",
+    order: 4,
+  },
+  {
     from: "docs/methodology/fees.md",
     to: "methodology/fees.md",
     title: "How the fees are measured",

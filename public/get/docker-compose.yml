@@ -20,6 +20,11 @@
 # program runs as is set up. An update that fails changes nothing and stops
 # the container with the reason in `docker compose logs api`.
 
+# The name every container and volume is prefixed with. Fixed here rather than
+# taken from the folder, so the one line that gets a locked-out seller back in
+# (`docker exec -it biryar-api-1 biryar-password`) is the same on every install.
+name: biryar
+
 services:
   db:
     image: postgres:17-alpine

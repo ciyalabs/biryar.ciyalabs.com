@@ -33,6 +33,7 @@ export default defineConfig({
           { label: 'Install', slug: 'setup/install' },
           { label: 'Getting your SP-API keys', slug: 'setup/sp-api' },
           { label: 'Keepa', slug: 'setup/keepa' },
+          { label: 'Getting back in', slug: 'setup/getting-back-in' },
         ]},
         { label: 'Using it', items: [
           { label: 'Repricing', slug: 'guide/repricing' },

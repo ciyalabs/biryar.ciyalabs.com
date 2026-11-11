@@ -98,10 +98,12 @@ by what `Page` does not carry.
 
 ## A worked example
 
-Medimops sells used books, CDs and DVDs. It is not one of the shipped
-retailers, it answers a plain request, and it is conventional in the
-way most shops are: the price and the condition are in schema.org
-JSON-LD, and the barcode is not.
+Medimops sells used books, CDs and DVDs. It ships with Biryar, and its
+adapter is the one to read first, because it is conventional in the way
+most shops are: the price and the condition are in schema.org JSON-LD,
+and the barcode is not. This is the whole of it, written the way you
+would write your own. A shop you add needs a `slug`, a `name` and
+`domains` of its own; a slug that a shipped shop already has is refused.
 
 ```python
 import re
@@ -120,7 +122,10 @@ class Medimops:
     name = "Medimops"
     country = "DE"
     domains = ("medimops.de", "www.medimops.de")
-    needs_scraper = False
+    # It answered a plain request at first. Then six of nine direct page
+    # reads came back 403, so it says what it needs rather than failing
+    # for some pages and not others.
+    needs_scraper = True
 
     def seeds(self):
         return ["https://www.medimops.de/sitemap_index_deu.xml"]
@@ -239,7 +244,7 @@ Every one of these came from a real page, and every one of them failed
 *quietly* — a healthy 200 and an empty result, never an error.
 
 **Structured data lies about state.** The rule that holds across all
-seventeen is *identity from the structured data, state from the page*.
+eighteen is *identity from the structured data, state from the page*.
 A `Product` block is a contract the shop maintains with search engines;
 it is not kept in sync with the shelf. One retailer's JSON-LD gives a
 price that has since been marked down and an availability that

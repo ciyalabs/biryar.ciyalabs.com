@@ -33,8 +33,12 @@ Those files say so at the top; edit them there, not here. The pages that
 belong to this site alone are the home page, Get Biryar, Support, Words
 used here, Reports and BiryarBot.
 
-Push the product repository first. The deploy here checks its copies
-against the product repository on GitHub and stops if they differ.
+**Push this site first, then the product repository.** The check runs on
+the product's side: its Docs workflow compares the guides there with this
+site as it stands on GitHub. Pushed in the other order, that check is red
+until this site has caught up and the check is run again. The deploy here
+checks nothing against the product repository, which is private and
+cannot be read from this one.
 
 ## Drawings
 

@@ -29,7 +29,7 @@ export const BUY = {
  * Empty, no counter is loaded and the site makes no request to anyone
  * but its own host.
  */
-export const GOATCOUNTER = '';
+export const GOATCOUNTER = 'biryar';
 
 export const buying = Boolean(BUY.month || BUY.year);
 export const counting = Boolean(GOATCOUNTER);

@@ -53,6 +53,7 @@ export default defineConfig({
           { label: 'What is new', slug: 'whats-new' },
           { label: 'Words used here', slug: 'words' },
           { label: 'Support', slug: 'support' },
+          { label: 'Terms of sale', slug: 'terms' },
           { label: 'Privacy', slug: 'privacy' },
         ]},
         { label: 'Setting up', items: [

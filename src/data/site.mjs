@@ -17,8 +17,8 @@
  * offers the invoice and bank transfer by email, as it always has.
  */
 export const BUY = {
-  month: '',
-  year: '',
+  month: 'https://buy.stripe.com/bJe6oHfKfd6tbUE4Tr3ZK00',
+  year: 'https://buy.stripe.com/4gMeVd0Pl3vT4scadL3ZK01',
 };
 
 /**
